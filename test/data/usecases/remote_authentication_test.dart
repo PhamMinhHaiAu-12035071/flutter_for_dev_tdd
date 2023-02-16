@@ -26,7 +26,7 @@ void main() {
     final body = params.toJSON();
     final accessToken = faker.guid.guid();
     when(() => httpClient.request(url: url, method: 'post', body: body))
-        .thenAnswer((invocation) async => ({
+        .thenAnswer((_) async => ({
               'accessToken': accessToken,
               'name': faker.person.name(),
             }));
@@ -82,12 +82,25 @@ void main() {
     final body = params.toJSON();
     final accessToken = faker.guid.guid();
     when(() => httpClient.request(url: url, method: 'post', body: body))
-        .thenAnswer((invocation) async => ({
+        .thenAnswer((_) async => ({
               'accessToken': accessToken,
               'name': faker.person.name(),
             }));
     final account = await sut.auth(params);
 
     expect(account.token, accessToken);
+  });
+
+  test(
+      'Should throw UnexpectedError if HttpClient return 200 with invalid data',
+      () async {
+    final body = params.toJSON();
+    when(() => httpClient.request(url: url, method: 'post', body: body))
+        .thenAnswer((_) async => ({
+              'invalid_key': 'invalid_value',
+            }));
+    final futureResult = sut.auth(params);
+
+    expect(futureResult, throwsA(DomainError.unexpected));
   });
 }
