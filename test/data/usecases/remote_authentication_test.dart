@@ -30,21 +30,23 @@ void main() {
   setUp(() {
     httpClient = HttpClientSpy();
     url = faker.internet.httpUrl();
-    when(() => httpClient.request(url: url, method: 'post'))
-        .thenAnswer((_) async => {});
+
     sut = RemoteAuthentication(httpClient: httpClient, url: url);
   });
 
   test('Should call HttpPostClient with correct URL', () async {
     final params = AuthenticationParams(
         email: faker.internet.email(), secret: faker.internet.password());
+    final body = {'email': params.email, 'password': params.secret};
+    when(() => httpClient.request(url: url, method: 'post', body: body))
+        .thenAnswer((_) async => {});
     await sut.auth(params);
 
     verify(
       () => httpClient.request(
         url: url,
         method: 'post',
-        body: {'email': params.email, 'password': params.secret},
+        body: body,
       ),
     ).called(1);
   });
