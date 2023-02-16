@@ -4,7 +4,7 @@ import 'package:flutter_for_dev_tdd/domain/entities/entities.dart';
 import 'package:flutter_for_dev_tdd/domain/helpers/helpers.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 
-class RemoteAuthentication {
+class RemoteAuthentication implements Authentication {
   final HttpClient httpClient;
   final String url;
 
