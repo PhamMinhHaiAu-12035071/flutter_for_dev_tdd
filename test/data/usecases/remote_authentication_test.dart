@@ -22,10 +22,14 @@ void main() {
         email: faker.internet.email(), secret: faker.internet.password());
   });
 
-  test('Should call HttpPostClient with correct URL', () async {
+  test('Should call HttpClient with correct values', () async {
     final body = params.toJSON();
+    final accessToken = faker.guid.guid();
     when(() => httpClient.request(url: url, method: 'post', body: body))
-        .thenAnswer((_) async => {});
+        .thenAnswer((invocation) async => ({
+              'accessToken': accessToken,
+              'name': faker.person.name(),
+            }));
     await sut.auth(params);
 
     verify(
@@ -72,5 +76,18 @@ void main() {
     final futureResult = sut.auth(params);
 
     expect(futureResult, throwsA(DomainError.invalidCredentials));
+  });
+
+  test('Should return an Account if HttpClient return 200', () async {
+    final body = params.toJSON();
+    final accessToken = faker.guid.guid();
+    when(() => httpClient.request(url: url, method: 'post', body: body))
+        .thenAnswer((invocation) async => ({
+              'accessToken': accessToken,
+              'name': faker.person.name(),
+            }));
+    final account = await sut.auth(params);
+
+    expect(account.token, accessToken);
   });
 }
