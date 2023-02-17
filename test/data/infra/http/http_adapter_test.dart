@@ -14,7 +14,7 @@ class HttpAdapter {
       'content-type': 'application/json',
       'accept': 'application/json',
     };
-    await client.post(Uri.parse(url), headers: headers);
+    await client.post(Uri.parse(url), headers: headers, body: body);
   }
 }
 
@@ -40,10 +40,13 @@ void main() {
 
   group('post', () {
     test('Should call post with correct values', () async {
-      when(() => client.post(uri, headers: headers))
+      final body = {
+        'any_key': 'any_value',
+      };
+      when(() => client.post(uri, headers: headers, body: body))
           .thenAnswer((_) async => Response('', 200));
-      await sut.request(url: url, method: 'post');
-      verify(() => client.post(uri, headers: headers));
+      await sut.request(url: url, method: 'post', body: body);
+      verify(() => client.post(uri, headers: headers, body: body)).called(1);
     });
   });
 }
