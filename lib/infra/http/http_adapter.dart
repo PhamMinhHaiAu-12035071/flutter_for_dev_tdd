@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_for_dev_tdd/data/http/http_client.dart';
+import 'package:flutter_for_dev_tdd/data/http/http.dart';
 import "package:http/http.dart" as http;
 
 class HttpAdapter implements HttpClient {
@@ -24,6 +24,8 @@ class HttpAdapter implements HttpClient {
   Map? _privateMethod(http.Response response) {
     if (response.statusCode == 204 || response.body.isEmpty) {
       return null;
+    } else if (response.statusCode == 400) {
+      throw HttpError.badRequest;
     }
     final Map json = jsonDecode(response.body);
     return json;
