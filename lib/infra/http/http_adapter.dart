@@ -26,6 +26,8 @@ class HttpAdapter implements HttpClient {
       return null;
     } else if (response.statusCode == 400) {
       throw HttpError.badRequest;
+    } else if (response.statusCode == 500) {
+      throw HttpError.serverError;
     }
     final Map json = jsonDecode(response.body);
     return json;
