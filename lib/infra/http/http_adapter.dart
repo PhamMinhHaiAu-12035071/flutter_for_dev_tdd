@@ -18,6 +18,10 @@ class HttpAdapter implements HttpClient {
     final encodedBody = body != null ? jsonEncode(body) : null;
     final response =
         await client.post(Uri.parse(url), headers: headers, body: encodedBody);
+    return _privateMethod(response);
+  }
+
+  Map? _privateMethod(http.Response response) {
     if (response.statusCode == 204 || response.body.isEmpty) {
       return null;
     }
