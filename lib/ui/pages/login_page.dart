@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_for_dev_tdd/ui/components/components.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -8,36 +9,49 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const Image(image: AssetImage('lib/ui/assets/images/logo.png')),
-            Text('Login'.toUpperCase()),
-            Form(
-              child: Column(
-                children: <Widget>[
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      icon: Icon(Icons.email),
+            const LoginHeader(),
+            const DisplayLarge(text: 'Login'),
+            Padding(
+              padding: const EdgeInsets.all(32),
+              child: Form(
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        icon: Icon(
+                          Icons.email,
+                          color: Theme.of(context).primaryColorLight,
+                        ),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
                     ),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      icon: Icon(Icons.lock),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8, bottom: 32),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          icon: Icon(
+                            Icons.lock,
+                            color: Theme.of(context).primaryColorLight,
+                          ),
+                        ),
+                        obscureText: true,
+                      ),
                     ),
-                    obscureText: true,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Login'),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.person),
-                    label: const Text('Login'),
-                  ),
-                ],
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: const Text('Login'),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.person),
+                      label: const Text('Login'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
