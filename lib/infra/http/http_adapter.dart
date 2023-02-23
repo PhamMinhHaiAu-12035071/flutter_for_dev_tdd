@@ -17,11 +17,14 @@ class HttpAdapter implements HttpClient {
     };
     final encodedBody = body != null ? jsonEncode(body) : null;
     var response = http.Response('', 500);
-    if (method == "post") {
-      response = await client.post(Uri.parse(url),
-          headers: headers, body: encodedBody);
+    try {
+      if (method == "post") {
+        response = await client.post(Uri.parse(url),
+            headers: headers, body: encodedBody);
+      }
+    } catch (_) {
+      throw HttpError.serverError;
     }
-
     return _privateMethod(response);
   }
 
