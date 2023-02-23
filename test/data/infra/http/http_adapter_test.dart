@@ -26,6 +26,13 @@ void main() {
     reset(client);
   });
 
+  group('shared', () {
+    test('Should throw ServerError if invalid method is provider', () async {
+      final future = sut.request(url: url, method: 'invalid_method');
+      expect(future, throwsA(HttpError.serverError));
+    });
+  });
+
   group('post', () {
     When mockRequest() => when(() => client.post(
           uri,

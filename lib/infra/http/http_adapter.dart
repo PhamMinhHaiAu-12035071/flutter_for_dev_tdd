@@ -16,15 +16,17 @@ class HttpAdapter implements HttpClient {
       'accept': 'application/json',
     };
     final encodedBody = body != null ? jsonEncode(body) : null;
-    final response =
-        await client.post(Uri.parse(url), headers: headers, body: encodedBody);
+    var response = http.Response('', 500);
+    if (method == "post") {
+      response = await client.post(Uri.parse(url),
+          headers: headers, body: encodedBody);
+    }
+
     return _privateMethod(response);
   }
 
   Map? _privateMethod(http.Response response) {
-    if (response.statusCode == 204 || response.body.isEmpty) {
-      return null;
-    } else if (response.statusCode == 400) {
+    if (response.statusCode == 400) {
       throw HttpError.badRequest;
     } else if (response.statusCode == 401) {
       throw HttpError.unauthorized;
@@ -34,6 +36,8 @@ class HttpAdapter implements HttpClient {
       throw HttpError.notFound;
     } else if (response.statusCode == 500) {
       throw HttpError.serverError;
+    } else if (response.statusCode == 204 || response.body.isEmpty) {
+      return null;
     }
     final Map json = jsonDecode(response.body);
     return json;
