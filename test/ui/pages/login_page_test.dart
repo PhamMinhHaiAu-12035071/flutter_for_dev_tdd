@@ -42,6 +42,7 @@ void main() {
         .thenAnswer((_) => isFormValidController.stream);
     when(() => presenter.isLoadingStream)
         .thenAnswer((_) => isLoadingController.stream);
+
     final loginPage = MaterialApp(home: LoginPage(presenter: presenter));
     await tester.pumpWidget(loginPage);
   }
@@ -205,10 +206,15 @@ void main() {
       (widgetTester) async {
     await loadPage(widgetTester);
     isFormValidController.add(true);
+    await widgetTester.pumpAndSettle();
+    await widgetTester.ensureVisible(find.byType(ElevatedButton));
+    expect(find.byType(ElevatedButton), findsOneWidget);
+    final button =
+        widgetTester.widget<ElevatedButton>(find.byType(ElevatedButton));
+    expect(button.onPressed, isNotNull);
     await widgetTester.pump();
+    when(presenter.auth).thenAnswer((_) async {});
     await widgetTester.tap(find.byType(ElevatedButton));
-    await widgetTester.pump();
-
     verify(() => presenter.auth()).called(1);
   });
 
