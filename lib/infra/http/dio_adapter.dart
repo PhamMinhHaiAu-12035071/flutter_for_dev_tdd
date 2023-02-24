@@ -7,12 +7,15 @@ class DioAdapter implements HttpClient {
   DioAdapter({required this.client});
 
   @override
-  Future<Map> request(
+  Future<Map?> request(
       {required String url,
       required String method,
       Map? body,
       dynamic options}) async {
     final response = await client.post(url, data: body, options: options);
+    if (response.data.isEmpty) {
+      return null;
+    }
     return response.data;
   }
 }
