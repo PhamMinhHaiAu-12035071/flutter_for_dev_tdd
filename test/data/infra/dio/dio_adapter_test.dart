@@ -62,5 +62,15 @@ void main() {
       await sut.request(url: url, method: 'post', options: options);
       verify(() => client.post(url, options: options));
     });
+
+    test('Should call post without options', () async {
+      when(() => client.post(url)).thenAnswer((_) async => Response(
+            data: {},
+            statusCode: 200,
+            requestOptions: RequestOptions(),
+          ));
+      await sut.request(url: url, method: 'post');
+      verify(() => client.post(url));
+    });
   });
 }
