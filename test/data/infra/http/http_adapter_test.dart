@@ -121,12 +121,5 @@ void main() {
 
       expect(response, throwsA(HttpError.serverError));
     });
-
-    test('Should return ServerError if post returns 500', () async {
-      mockResponse(500);
-      final response = sut.request(url: url, method: 'post');
-
-      expect(response, throwsA(HttpError.serverError));
-    });
   });
 }

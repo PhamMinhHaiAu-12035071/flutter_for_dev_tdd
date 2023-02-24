@@ -21,6 +21,11 @@ void main() {
     sut = DioAdapter(client: client);
   });
 
+  tearDown(() {
+    reset(options);
+    reset(client);
+  });
+
   When mockHeaders() => when(() => options.headers);
 
   void mockHeaderReturn() {
@@ -31,19 +36,36 @@ void main() {
     mockHeaders().thenReturn(headers);
   }
 
+  When mockRequest() => when(() => client.post(
+        url,
+        data: any(named: 'data'),
+        options: any(named: 'options'),
+      ));
+
+  void mockResponse(int statusCode, {Map body = const {}}) {
+    mockRequest().thenAnswer((_) async => Response(
+          data: body,
+          statusCode: statusCode,
+          requestOptions: RequestOptions(),
+        ));
+  }
+
+  group('shared', () {
+    test('Should throw ServerError if invalid method is provider', () async {
+      final future = sut.request(url: url, method: 'invalid_method');
+      expect(future, throwsA(HttpError.serverError));
+    });
+  });
+
   group('post', () {
+    setUp(() {
+      mockHeaderReturn();
+      mockResponse(200);
+    });
     test('Should call post with correct values', () async {
       final body = {
         'any_key': 'any_value',
       };
-
-      mockHeaderReturn();
-      when(() => client.post(url, data: body, options: options))
-          .thenAnswer((_) async => Response(
-                data: body,
-                statusCode: 200,
-                requestOptions: RequestOptions(),
-              ));
       await sut.request(url: url, method: 'post', body: body, options: options);
       expect(options.headers, {
         Headers.contentTypeHeader: 'application/json',
@@ -53,35 +75,16 @@ void main() {
     });
 
     test('Should call post without body', () async {
-      mockHeaderReturn();
-      when(() => client.post(url, options: options))
-          .thenAnswer((_) async => Response(
-                data: {},
-                statusCode: 200,
-                requestOptions: RequestOptions(),
-              ));
       await sut.request(url: url, method: 'post', options: options);
       verify(() => client.post(url, options: options));
     });
 
     test('Should call post without options', () async {
-      when(() => client.post(url)).thenAnswer((_) async => Response(
-            data: {},
-            statusCode: 200,
-            requestOptions: RequestOptions(),
-          ));
       await sut.request(url: url, method: 'post');
       verify(() => client.post(url));
     });
 
     test('Should call post with options', () async {
-      mockHeaderReturn();
-      when(() => client.post(url, options: options))
-          .thenAnswer((_) async => Response(
-                data: {},
-                statusCode: 200,
-                requestOptions: RequestOptions(),
-              ));
       await sut.request(url: url, method: 'post', options: options);
       verify(() => client.post(url, options: options));
     });
@@ -90,86 +93,43 @@ void main() {
       final body = {
         'any_key': 'any_value',
       };
-      mockHeaderReturn();
-      when(() => client.post(url, data: body, options: options))
-          .thenAnswer((_) async => Response(
-                data: body,
-                statusCode: 200,
-                requestOptions: RequestOptions(),
-              ));
+      mockResponse(200, body: body);
       final response = await sut.request(
           url: url, method: 'post', body: body, options: options);
       expect(response, body);
     });
 
     test('Should return null if post returns 200 with no data', () async {
-      mockHeaderReturn();
-      when(() => client.post(url, options: options))
-          .thenAnswer((_) async => Response(
-                data: {},
-                statusCode: 200,
-                requestOptions: RequestOptions(),
-              ));
       final response =
           await sut.request(url: url, method: 'post', options: options);
       expect(response, null);
     });
     test('Should return null if post returns 204 with no data', () async {
-      mockHeaderReturn();
-      when(() => client.post(url, options: options))
-          .thenAnswer((_) async => Response(
-                data: {},
-                statusCode: 204,
-                requestOptions: RequestOptions(),
-              ));
+      mockResponse(204);
       final response =
           await sut.request(url: url, method: 'post', options: options);
       expect(response, null);
     });
     test('Should return BadRequest if post returns 400', () async {
-      mockHeaderReturn();
-      when(() => client.post(url, options: options))
-          .thenAnswer((_) async => Response(
-                data: {},
-                statusCode: 400,
-                requestOptions: RequestOptions(),
-              ));
+      mockResponse(400);
       final future = sut.request(url: url, method: 'post', options: options);
       expect(future, throwsA(HttpError.badRequest));
     });
 
     test('Should return UnauthorizedError if post returns 401', () async {
-      mockHeaderReturn();
-      when(() => client.post(url, options: options))
-          .thenAnswer((_) async => Response(
-                data: {},
-                statusCode: 401,
-                requestOptions: RequestOptions(),
-              ));
+      mockResponse(401);
       final future = sut.request(url: url, method: 'post', options: options);
       expect(future, throwsA(HttpError.unauthorized));
     });
 
     test('Should return ForbiddenError if post returns 403', () async {
-      mockHeaderReturn();
-      when(() => client.post(url, options: options))
-          .thenAnswer((_) async => Response(
-                data: {},
-                statusCode: 403,
-                requestOptions: RequestOptions(),
-              ));
+      mockResponse(403);
       final future = sut.request(url: url, method: 'post', options: options);
       expect(future, throwsA(HttpError.forbidden));
     });
 
     test('Should return ServerError if post returns 500', () async {
-      mockHeaderReturn();
-      when(() => client.post(url, options: options))
-          .thenAnswer((_) async => Response(
-                data: {},
-                statusCode: 500,
-                requestOptions: RequestOptions(),
-              ));
+      mockResponse(500);
       final future = sut.request(url: url, method: 'post', options: options);
       expect(future, throwsA(HttpError.serverError));
     });

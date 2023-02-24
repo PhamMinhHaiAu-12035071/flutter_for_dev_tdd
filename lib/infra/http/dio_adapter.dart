@@ -12,7 +12,10 @@ class DioAdapter implements HttpClient {
       required String method,
       Map? body,
       dynamic options}) async {
-    final response = await client.post(url, data: body, options: options);
+    var response = Response(statusCode: 500, requestOptions: RequestOptions());
+    if (method == 'post') {
+      response = await client.post(url, data: body, options: options);
+    }
     return _handleResponse(response);
   }
 
