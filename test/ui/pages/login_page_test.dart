@@ -1,11 +1,17 @@
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/login_page.dart';
+import 'package:flutter_for_dev_tdd/ui/pages/login/login_presenter.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class LoginPresenterSpy extends Mock implements LoginPresenter {}
 
 void main() {
+  LoginPresenter presenter = LoginPresenterSpy();
+
   Future<void> loadPage(WidgetTester tester) async {
-    const loginPage = MaterialApp(home: LoginPage());
+    final loginPage = MaterialApp(home: LoginPage(presenter: presenter));
     await tester.pumpWidget(loginPage);
   }
 
@@ -47,5 +53,19 @@ void main() {
     /// Enter email
     final email = faker.internet.email();
     await widgetTester.enterText(find.bySemanticsLabel('Email'), email);
+
+    when(() => presenter.validateEmail(email)).thenAnswer((_) {
+      return;
+    });
+    verify(() => presenter.validateEmail(email)).called(1);
+
+    /// Enter password
+    final password = faker.internet.password();
+    await widgetTester.enterText(find.bySemanticsLabel('Password'), password);
+
+    when(() => presenter.validatePassword(password)).thenAnswer((_) {
+      return;
+    });
+    verify(() => presenter.validatePassword(password)).called(1);
   });
 }

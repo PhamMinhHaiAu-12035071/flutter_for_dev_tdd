@@ -13,7 +13,7 @@ void main() {
   late String url;
   late Dio client;
   late DioAdapter sut;
-  late OptionSpy options;
+  late Options options;
   setUp(() {
     url = faker.internet.httpUrl();
     options = OptionSpy();
