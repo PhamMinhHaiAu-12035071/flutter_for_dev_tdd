@@ -161,5 +161,17 @@ void main() {
       final future = sut.request(url: url, method: 'post', options: options);
       expect(future, throwsA(HttpError.forbidden));
     });
+
+    test('Should return ServerError if post returns 500', () async {
+      mockHeaderReturn();
+      when(() => client.post(url, options: options))
+          .thenAnswer((_) async => Response(
+                data: {},
+                statusCode: 500,
+                requestOptions: RequestOptions(),
+              ));
+      final future = sut.request(url: url, method: 'post', options: options);
+      expect(future, throwsA(HttpError.serverError));
+    });
   });
 }
