@@ -114,6 +114,18 @@ void main() {
           await sut.request(url: url, method: 'post', options: options);
       expect(response, null);
     });
+    test('Should return null if post returns 204 with no data', () async {
+      mockHeaderReturn();
+      when(() => client.post(url, options: options))
+          .thenAnswer((_) async => Response(
+                data: {},
+                statusCode: 204,
+                requestOptions: RequestOptions(),
+              ));
+      final response =
+          await sut.request(url: url, method: 'post', options: options);
+      expect(response, null);
+    });
     test('Should return BadRequest if post returns 400', () async {
       mockHeaderReturn();
       when(() => client.post(url, options: options))

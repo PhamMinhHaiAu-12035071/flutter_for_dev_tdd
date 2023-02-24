@@ -27,7 +27,7 @@ class DioAdapter implements HttpClient {
       throw HttpError.notFound;
     } else if (response.statusCode == 500) {
       throw HttpError.serverError;
-    } else if (response.data.isEmpty) {
+    } else if (response.data.isEmpty || response.statusCode == 204) {
       return null;
     }
     return response.data;
