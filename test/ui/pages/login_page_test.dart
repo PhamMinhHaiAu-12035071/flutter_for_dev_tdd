@@ -1,5 +1,6 @@
+import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_for_dev_tdd/ui/pages/login_page.dart';
+import 'package:flutter_for_dev_tdd/ui/pages/login/login_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -38,5 +39,13 @@ void main() {
     /// Find the login button
     final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
     expect(button.onPressed, null);
+  });
+
+  testWidgets('Should call validate with correct values', (widgetTester) async {
+    await loadPage(widgetTester);
+
+    /// Enter email
+    final email = faker.internet.email();
+    await widgetTester.enterText(find.bySemanticsLabel('Email'), email);
   });
 }
