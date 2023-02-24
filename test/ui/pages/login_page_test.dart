@@ -12,6 +12,7 @@ class LoginPresenterSpy extends Mock implements LoginPresenter {}
 void main() {
   late LoginPresenter presenter;
   late StreamController<String?> emailErrorController;
+  late StreamController<String?> passwordErrorController;
 
   tearDown(() {
     emailErrorController.close();
@@ -20,8 +21,11 @@ void main() {
   Future<void> loadPage(WidgetTester tester) async {
     presenter = LoginPresenterSpy();
     emailErrorController = StreamController<String?>();
+    passwordErrorController = StreamController<String?>();
     when(() => presenter.emailErrorStream)
         .thenAnswer((_) => emailErrorController.stream);
+    when(() => presenter.passwordErrorStream)
+        .thenAnswer((_) => passwordErrorController.stream);
     final loginPage = MaterialApp(home: LoginPage(presenter: presenter));
     await tester.pumpWidget(loginPage);
   }
@@ -115,6 +119,48 @@ void main() {
     expect(
       find.descendant(
         of: find.bySemanticsLabel('Email'),
+        matching: find.byType(Text),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Should present error if password is invalid',
+      (widgetTester) async {
+    await loadPage(widgetTester);
+    passwordErrorController.add('any_error');
+
+    await widgetTester.pump();
+
+    expect(find.text('any_error'), findsOneWidget);
+  });
+
+  testWidgets('Should present no error if password is valid',
+      (widgetTester) async {
+    await loadPage(widgetTester);
+    passwordErrorController.add(null);
+
+    await widgetTester.pump();
+
+    expect(
+      find.descendant(
+        of: find.bySemanticsLabel('Password'),
+        matching: find.byType(Text),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Should present no error if password is valid',
+      (widgetTester) async {
+    await loadPage(widgetTester);
+    passwordErrorController.add('');
+
+    await widgetTester.pump();
+
+    expect(
+      find.descendant(
+        of: find.bySemanticsLabel('Password'),
         matching: find.byType(Text),
       ),
       findsOneWidget,
