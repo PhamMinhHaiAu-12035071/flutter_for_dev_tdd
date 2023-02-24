@@ -137,5 +137,17 @@ void main() {
       final future = sut.request(url: url, method: 'post', options: options);
       expect(future, throwsA(HttpError.badRequest));
     });
+
+    test('Should return UnauthorizedError if post returns 401', () async {
+      mockHeaderReturn();
+      when(() => client.post(url, options: options))
+          .thenAnswer((_) async => Response(
+                data: {},
+                statusCode: 401,
+                requestOptions: RequestOptions(),
+              ));
+      final future = sut.request(url: url, method: 'post', options: options);
+      expect(future, throwsA(HttpError.unauthorized));
+    });
   });
 }
