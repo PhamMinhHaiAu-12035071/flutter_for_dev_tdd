@@ -10,77 +10,101 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            const LoginHeader(),
-            const DisplayLarge(text: 'Login'),
-            Padding(
-              padding: const EdgeInsets.all(32),
-              child: Form(
-                child: Column(
+      body: Builder(builder: (context) {
+        presenter?.isLoadingStream.listen((isLoading) {
+          if (isLoading == true) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return SimpleDialog(
                   children: <Widget>[
-                    StreamBuilder<String?>(
-                        stream: presenter?.emailErrorStream,
-                        builder: (context, snapshot) {
-                          return TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Email',
-                              errorText: snapshot.data?.isEmpty == true
-                                  ? null
-                                  : snapshot.data,
-                              icon: Icon(
-                                Icons.email,
-                                color: Theme.of(context).primaryColorLight,
-                              ),
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                            onChanged: presenter?.validateEmail,
-                          );
-                        }),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8, bottom: 32),
-                      child: StreamBuilder<String?>(
-                          stream: presenter?.passwordErrorStream,
+                    Column(
+                      children: const <Widget>[
+                        CircularProgressIndicator(),
+                        SizedBox(height: 10),
+                        Text('Loading', textAlign: TextAlign.center),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        });
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              const LoginHeader(),
+              const DisplayLarge(text: 'Login'),
+              Padding(
+                padding: const EdgeInsets.all(32),
+                child: Form(
+                  child: Column(
+                    children: <Widget>[
+                      StreamBuilder<String?>(
+                          stream: presenter?.emailErrorStream,
                           builder: (context, snapshot) {
                             return TextFormField(
                               decoration: InputDecoration(
-                                labelText: 'Password',
+                                labelText: 'Email',
                                 errorText: snapshot.data?.isEmpty == true
                                     ? null
                                     : snapshot.data,
                                 icon: Icon(
-                                  Icons.lock,
+                                  Icons.email,
                                   color: Theme.of(context).primaryColorLight,
                                 ),
                               ),
-                              obscureText: true,
-                              onChanged: presenter?.validatePassword,
+                              keyboardType: TextInputType.emailAddress,
+                              onChanged: presenter?.validateEmail,
                             );
                           }),
-                    ),
-                    StreamBuilder<bool?>(
-                        stream: presenter?.isFormValidStream,
-                        builder: (context, snapshot) {
-                          return ElevatedButton(
-                            onPressed:
-                                snapshot.data == true ? presenter?.auth : null,
-                            child: const Text('Login'),
-                          );
-                        }),
-                    TextButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.person),
-                      label: const Text('Login'),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8, bottom: 32),
+                        child: StreamBuilder<String?>(
+                            stream: presenter?.passwordErrorStream,
+                            builder: (context, snapshot) {
+                              return TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  errorText: snapshot.data?.isEmpty == true
+                                      ? null
+                                      : snapshot.data,
+                                  icon: Icon(
+                                    Icons.lock,
+                                    color: Theme.of(context).primaryColorLight,
+                                  ),
+                                ),
+                                obscureText: true,
+                                onChanged: presenter?.validatePassword,
+                              );
+                            }),
+                      ),
+                      StreamBuilder<bool?>(
+                          stream: presenter?.isFormValidStream,
+                          builder: (context, snapshot) {
+                            return ElevatedButton(
+                              onPressed: snapshot.data == true
+                                  ? presenter?.auth
+                                  : null,
+                              child: const Text('Login'),
+                            );
+                          }),
+                      TextButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.person),
+                        label: const Text('Login'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }
