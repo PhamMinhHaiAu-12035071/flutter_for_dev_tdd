@@ -84,5 +84,21 @@ void main() {
       await sut.request(url: url, method: 'post', options: options);
       verify(() => client.post(url, options: options));
     });
+
+    test('Should return data if post returns 200', () async {
+      final body = {
+        'any_key': 'any_value',
+      };
+      mockHeaderReturn();
+      when(() => client.post(url, data: body, options: options))
+          .thenAnswer((_) async => Response(
+                data: body,
+                statusCode: 200,
+                requestOptions: RequestOptions(),
+              ));
+      final response = await sut.request(
+          url: url, method: 'post', body: body, options: options);
+      expect(response, body);
+    });
   });
 }
