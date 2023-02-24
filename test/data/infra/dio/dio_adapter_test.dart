@@ -149,5 +149,17 @@ void main() {
       final future = sut.request(url: url, method: 'post', options: options);
       expect(future, throwsA(HttpError.unauthorized));
     });
+
+    test('Should return ForbiddenError if post returns 403', () async {
+      mockHeaderReturn();
+      when(() => client.post(url, options: options))
+          .thenAnswer((_) async => Response(
+                data: {},
+                statusCode: 403,
+                requestOptions: RequestOptions(),
+              ));
+      final future = sut.request(url: url, method: 'post', options: options);
+      expect(future, throwsA(HttpError.forbidden));
+    });
   });
 }
