@@ -10,11 +10,15 @@ class HttpAdapter implements HttpClient {
 
   @override
   Future<Map?> request(
-      {required String url, required String method, Map? body}) async {
-    final Map<String, String> headers = {
-      'content-type': 'application/json',
-      'accept': 'application/json',
-    };
+      {required String url,
+      required String method,
+      Map? body,
+      dynamic options}) async {
+    final Map<String, String> headers = options ??
+        {
+          'content-type': 'application/json',
+          'accept': 'application/json',
+        };
     final encodedBody = body != null ? jsonEncode(body) : null;
     var response = http.Response('', 500);
     try {
