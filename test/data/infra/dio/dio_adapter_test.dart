@@ -72,5 +72,17 @@ void main() {
       await sut.request(url: url, method: 'post');
       verify(() => client.post(url));
     });
+
+    test('Should call post with options', () async {
+      mockHeaderReturn();
+      when(() => client.post(url, options: options))
+          .thenAnswer((_) async => Response(
+                data: {},
+                statusCode: 200,
+                requestOptions: RequestOptions(),
+              ));
+      await sut.request(url: url, method: 'post', options: options);
+      verify(() => client.post(url, options: options));
+    });
   });
 }
