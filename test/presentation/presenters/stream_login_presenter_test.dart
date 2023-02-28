@@ -34,13 +34,10 @@ void main() {
 
   test('Should emit email errors if validation fails', () {
     mockValidation(response: 'error');
-    expectLater(sut.emailErrorStream, emits('error'));
-    sut.validateEmail(email);
-  });
-  test('Should emit email errors with not duplicated error', () {
-    mockValidation(response: 'error');
     sut.emailErrorStream
         .listen(expectAsync1((error) => expect(error, 'error')));
+    sut.isFormValidStream
+        .listen(expectAsync1((isValid) => expect(isValid, false)));
     sut.validateEmail(email);
     sut.validateEmail(email);
   });
