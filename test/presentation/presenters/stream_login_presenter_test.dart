@@ -24,6 +24,12 @@ void main() {
   void mockValidation({String? field, String? value}) =>
       mockValidationCall(field, value).thenReturn(value);
 
+  When mockAuthenticationCall() => when(() => authentication.auth(any()));
+
+  void mockAuthentication({String? field, String? value}) =>
+      mockAuthenticationCall()
+          .thenAnswer((_) async => AccountEntity(faker.guid.guid()));
+
   setUp(() {
     validation = ValidationSpy();
     authentication = AuthenticationSpy();
@@ -32,9 +38,8 @@ void main() {
     email = faker.internet.email();
     password = faker.internet.password();
   });
-  tearDown(() {
-    reset(validation);
-    reset(authentication);
+  setUpAll(() {
+    registerFallbackValue(const AuthenticationParams(email: '', secret: ''));
   });
 
   test('Should call Validation with correct email', () {
@@ -150,11 +155,21 @@ void main() {
   test('Should call Authentication with correct values', () async {
     mockValidation(field: 'email', value: email);
     mockValidation(field: 'password', value: password);
+    mockAuthentication();
     sut.validateEmail(email);
     sut.validatePassword(password);
-    when(() => authentication
-            .auth(AuthenticationParams(email: email, secret: password)))
-        .thenAnswer((_) async => AccountEntity(faker.guid.guid()));
+    await sut.auth();
+    verify(() => authentication
+        .auth(AuthenticationParams(email: email, secret: password))).called(1);
+  });
+
+  test('Should emit correct events on Authentication success', () async {
+    mockValidation(field: 'email', value: email);
+    mockValidation(field: 'password', value: password);
+    mockAuthentication();
+    sut.validateEmail(email);
+    sut.validatePassword(password);
+    expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
     await sut.auth();
     verify(() => authentication
         .auth(AuthenticationParams(email: email, secret: password))).called(1);
