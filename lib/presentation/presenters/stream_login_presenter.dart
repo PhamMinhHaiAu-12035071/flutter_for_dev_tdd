@@ -21,24 +21,25 @@ class LoginState {
 class StreamLoginPresenter {
   final Validation validation;
   final Authentication authentication;
-  final _controller = StreamController<LoginState>.broadcast();
+  StreamController<LoginState>? _controller =
+      StreamController<LoginState>.broadcast();
   final _state = LoginState();
 
-  Stream<String?> get emailErrorStream =>
-      _controller.stream.map((state) => state.emailError).distinct();
-  Stream<String?> get passwordErrorStream =>
-      _controller.stream.map((state) => state.passwordError).distinct();
-  Stream<bool> get isFormValidStream =>
-      _controller.stream.map((state) => state.isFormValid).distinct();
-  Stream<bool> get isLoadingStream =>
-      _controller.stream.map((state) => state.isLoading).distinct();
-  Stream<String?> get mainErrorStream =>
-      _controller.stream.map((state) => state.mainError).distinct();
+  Stream<String?>? get emailErrorStream =>
+      _controller?.stream.map((state) => state.emailError).distinct();
+  Stream<String?>? get passwordErrorStream =>
+      _controller?.stream.map((state) => state.passwordError).distinct();
+  Stream<bool>? get isFormValidStream =>
+      _controller?.stream.map((state) => state.isFormValid).distinct();
+  Stream<bool>? get isLoadingStream =>
+      _controller?.stream.map((state) => state.isLoading).distinct();
+  Stream<String?>? get mainErrorStream =>
+      _controller?.stream.map((state) => state.mainError).distinct();
 
   StreamLoginPresenter(
       {required this.validation, required this.authentication});
 
-  void _update() => _controller.add(_state);
+  void _update() => _controller?.add(_state);
 
   void validateEmail(String email) {
     _state.email = email;
@@ -66,5 +67,10 @@ class StreamLoginPresenter {
       _state.isLoading = false;
       _update();
     }
+  }
+
+  void dispose() {
+    _controller?.close();
+    _controller = null;
   }
 }
