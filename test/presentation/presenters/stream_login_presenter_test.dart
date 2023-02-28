@@ -37,4 +37,11 @@ void main() {
     expectLater(sut.emailErrorStream, emits('error'));
     sut.validateEmail(email);
   });
+  test('Should emit email errors with not duplicated error', () {
+    mockValidation(response: 'error');
+    sut.emailErrorStream
+        .listen(expectAsync1((error) => expect(error, 'error')));
+    sut.validateEmail(email);
+    sut.validateEmail(email);
+  });
 }
