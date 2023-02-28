@@ -53,13 +53,23 @@ void main() {
 
   test('Should call Validation with correct password', () {
     sut.validatePassword(password);
-    verify(() => validation.validate(field: 'email', value: email)).called(1);
+    verify(() => validation.validate(field: 'password', value: password))
+        .called(1);
   });
 
   test('Should emit password errors if validation fails', () {
     mockValidation(response: 'error');
     sut.passwordErrorStream
         .listen(expectAsync1((error) => expect(error, 'error')));
+    sut.isFormValidStream
+        .listen(expectAsync1((isValid) => expect(isValid, false)));
+    sut.validatePassword(password);
+    sut.validatePassword(password);
+  });
+
+  test('Should emit password null if validation succeeds', () {
+    sut.passwordErrorStream
+        .listen(expectAsync1((error) => expect(error, null)));
     sut.isFormValidStream
         .listen(expectAsync1((isValid) => expect(isValid, false)));
     sut.validatePassword(password);
