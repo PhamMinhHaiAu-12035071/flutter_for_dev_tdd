@@ -31,13 +31,24 @@ class StreamLoginPresenter {
 class ValidationSpy extends Mock implements Validation {}
 
 void main() {
-  late final ValidationSpy validation;
-  late final StreamLoginPresenter sut;
-  late final String email;
+  late ValidationSpy validation;
+  late StreamLoginPresenter sut;
+  late String email;
+
+  When mockValidationCall(String? response) => when(() => validation.validate(
+      field: any(named: 'field'), value: any(named: 'value')));
+
+  void mockValidation({String? response}) =>
+      mockValidationCall(response).thenReturn(response);
+
   setUp(() {
     validation = ValidationSpy();
     sut = StreamLoginPresenter(validation: validation);
     email = faker.internet.email();
+    mockValidation();
+  });
+  tearDown(() {
+    reset(validation);
   });
 
   test('Should call Validation with correct email', () {
@@ -46,9 +57,7 @@ void main() {
   });
 
   test('Should emit email errors if validation fails', () {
-    when(() => validation.validate(
-        field: any(named: 'field'),
-        value: any(named: 'value'))).thenReturn('error');
+    mockValidation(response: 'error');
     expectLater(sut.emailErrorStream, emits('error'));
     sut.validateEmail(email);
   });
