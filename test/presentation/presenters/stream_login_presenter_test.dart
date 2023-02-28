@@ -1,4 +1,6 @@
 import 'package:faker/faker.dart';
+import 'package:flutter_for_dev_tdd/domain/entities/entities.dart';
+import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 import 'package:flutter_for_dev_tdd/presentation/presenters/presenters.dart';
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,8 +8,11 @@ import 'package:mocktail/mocktail.dart';
 
 class ValidationSpy extends Mock implements Validation {}
 
+class AuthenticationSpy extends Mock implements Authentication {}
+
 void main() {
   late ValidationSpy validation;
+  late AuthenticationSpy authentication;
   late StreamLoginPresenter sut;
   late String email;
   late String password;
@@ -21,12 +26,15 @@ void main() {
 
   setUp(() {
     validation = ValidationSpy();
-    sut = StreamLoginPresenter(validation: validation);
+    authentication = AuthenticationSpy();
+    sut = StreamLoginPresenter(
+        validation: validation, authentication: authentication);
     email = faker.internet.email();
     password = faker.internet.password();
   });
   tearDown(() {
     reset(validation);
+    reset(authentication);
   });
 
   test('Should call Validation with correct email', () {
@@ -137,5 +145,18 @@ void main() {
       sut.validatePassword(password);
       sut.validatePassword(password);
     });
+  });
+
+  test('Should call Authentication with correct values', () async {
+    mockValidation(field: 'email', value: email);
+    mockValidation(field: 'password', value: password);
+    sut.validateEmail(email);
+    sut.validatePassword(password);
+    when(() => authentication
+            .auth(AuthenticationParams(email: email, secret: password)))
+        .thenAnswer((_) async => AccountEntity(faker.guid.guid()));
+    await sut.auth();
+    verify(() => authentication
+        .auth(AuthenticationParams(email: email, secret: password))).called(1);
   });
 }
