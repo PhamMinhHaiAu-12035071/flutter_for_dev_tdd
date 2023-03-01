@@ -24,4 +24,11 @@ void main() {
 
     expect(error, null);
   });
+
+  test('Should return error if value is empty', () {
+    final sut = RequiredFieldValidation('any_field');
+    final error = sut.validate('');
+
+    expect(error, 'Field is not empty');
+  });
 }
