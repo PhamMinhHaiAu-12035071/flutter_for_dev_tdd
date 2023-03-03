@@ -22,54 +22,64 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Builder(builder: (context) {
-        widget.presenter?.isLoadingStream.listen((isLoading) {
-          if (isLoading == true) {
-            showLoading(context);
-          } else {
-            hideLoading(context);
-          }
-        });
+    return GestureDetector(
+      onTap: _hideKeyboard,
+      child: Scaffold(
+        body: Builder(builder: (context) {
+          widget.presenter?.isLoadingStream.listen((isLoading) {
+            if (isLoading == true) {
+              showLoading(context);
+            } else {
+              hideLoading(context);
+            }
+          });
 
-        widget.presenter?.mainErrorStream.listen((error) {
-          if (error != null) {
-            showErrorMessage(context, error);
-          }
-        });
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const LoginHeader(),
-              const DisplayLarge(text: 'Login'),
-              Padding(
-                padding: const EdgeInsets.all(32),
-                child: Provider(
-                  create: (_) => widget.presenter,
-                  child: Form(
-                    child: Column(
-                      children: <Widget>[
-                        const EmailInput(),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 8, bottom: 32),
-                          child: PasswordInput(),
-                        ),
-                        const LoginButton(),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.person),
-                          label: const Text('Login'),
-                        ),
-                      ],
+          widget.presenter?.mainErrorStream.listen((error) {
+            if (error != null) {
+              showErrorMessage(context, error);
+            }
+          });
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const LoginHeader(),
+                const DisplayLarge(text: 'Login'),
+                Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Provider(
+                    create: (_) => widget.presenter,
+                    child: Form(
+                      child: Column(
+                        children: <Widget>[
+                          const EmailInput(),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 8, bottom: 32),
+                            child: PasswordInput(),
+                          ),
+                          const LoginButton(),
+                          TextButton.icon(
+                            onPressed: () {},
+                            icon: const Icon(Icons.person),
+                            label: const Text('Login'),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+          );
+        }),
+      ),
     );
+  }
+
+  void _hideKeyboard() {
+    final currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
   }
 }
