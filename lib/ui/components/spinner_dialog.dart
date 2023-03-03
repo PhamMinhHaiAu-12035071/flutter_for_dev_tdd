@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-Future<dynamic> showLoading(BuildContext context) {
-  return showDialog(
-    context: context,
+showLoading() async {
+  return Get.dialog(
+    SimpleDialog(
+      children: <Widget>[
+        Column(
+          children: const <Widget>[
+            CircularProgressIndicator(),
+            SizedBox(height: 10),
+            Text('Loading', textAlign: TextAlign.center),
+          ],
+        ),
+      ],
+    ),
     barrierDismissible: false,
-    builder: (context) {
-      return SimpleDialog(
-        children: <Widget>[
-          Column(
-            children: const <Widget>[
-              CircularProgressIndicator(),
-              SizedBox(height: 10),
-              Text('Loading', textAlign: TextAlign.center),
-            ],
-          ),
-        ],
-      );
-    },
   );
 }
 

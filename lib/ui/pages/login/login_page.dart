@@ -2,39 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_for_dev_tdd/ui/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/pages.dart';
-import 'package:provider/provider.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({super.key, this.presenter});
 
   final LoginPresenter? presenter;
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  @override
-  void dispose() {
-    super.dispose();
-    widget.presenter?.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _hideKeyboard,
+      onTap: () => _hideKeyboard(context),
       child: Scaffold(
         body: Builder(builder: (context) {
-          widget.presenter?.isLoadingStream.listen((isLoading) {
+          presenter?.isLoading.listen((isLoading) {
             if (isLoading == true) {
-              showLoading(context);
+              showLoading();
             } else {
               hideLoading(context);
             }
           });
 
-          widget.presenter?.mainErrorStream.listen((error) {
+          presenter?.mainError.listen((error) {
             if (error != null) {
               showErrorMessage(context, error);
             }
@@ -47,24 +35,21 @@ class _LoginPageState extends State<LoginPage> {
                 const DisplayLarge(text: 'Login'),
                 Padding(
                   padding: const EdgeInsets.all(32),
-                  child: Provider(
-                    create: (_) => widget.presenter,
-                    child: Form(
-                      child: Column(
-                        children: <Widget>[
-                          const EmailInput(),
-                          const Padding(
-                            padding: EdgeInsets.only(top: 8, bottom: 32),
-                            child: PasswordInput(),
-                          ),
-                          const LoginButton(),
-                          TextButton.icon(
-                            onPressed: () {},
-                            icon: const Icon(Icons.person),
-                            label: const Text('Login'),
-                          ),
-                        ],
-                      ),
+                  child: Form(
+                    child: Column(
+                      children: <Widget>[
+                        const EmailInput(),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8, bottom: 32),
+                          child: PasswordInput(),
+                        ),
+                        const LoginButton(),
+                        TextButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.person),
+                          label: const Text('Login'),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -76,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _hideKeyboard() {
+  void _hideKeyboard(BuildContext context) {
     final currentFocus = FocusScope.of(context);
     if (!currentFocus.hasPrimaryFocus) {
       currentFocus.unfocus();
