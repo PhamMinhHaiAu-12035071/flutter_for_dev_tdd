@@ -3,6 +3,7 @@ import 'package:flutter_for_dev_tdd/data/cache/cache.dart';
 import 'package:flutter_for_dev_tdd/data/usecases/usecases.dart';
 import 'package:flutter_for_dev_tdd/domain/entities/account_entity.dart';
 import 'package:flutter_for_dev_tdd/domain/helpers/helpers.dart';
+import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
@@ -11,7 +12,7 @@ class SaveSecureCacheStorageSpy extends Mock
 
 void main() {
   late SaveSecureCacheStorage cacheStorage;
-  late LocalSaveCurrentAccount sut;
+  late SaveCurrentAccount sut;
   late AccountEntity account;
 
   When mockCacheStorage() => when(() => cacheStorage.saveSecure(
