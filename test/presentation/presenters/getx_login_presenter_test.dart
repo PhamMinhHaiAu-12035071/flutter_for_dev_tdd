@@ -140,16 +140,14 @@ void main() {
       sut.validatePassword(password);
     });
   });
-  test('Should emit password null if validation succeeds', () {
+  test('Should emit password null if validation succeeds', () async* {
     sut.emailError.listen(expectAsync1((error) => expect(error, null)));
     sut.passwordError.listen(expectAsync1((error) => expect(error, null)));
-    expectLater(sut.isFormValid.stream, emitsInOrder([false, true]));
+    expectLater(sut.isFormValid, emitsInOrder([false, true]));
     sut.validateEmail(email);
     sut.validateEmail(email);
-    Future.delayed(Duration.zero).then((_) {
-      sut.validatePassword(password);
-      sut.validatePassword(password);
-    });
+    sut.validatePassword(password);
+    sut.validatePassword(password);
   });
 
   test('Should call Authentication with correct values', () async {
@@ -171,52 +169,61 @@ void main() {
     verify(() => saveCurrentAccount.save(AccountEntity(token))).called(1);
   });
 
-  test('Should emit correct events on Authentication success', () async {
+  test('Should emit correct events on Authentication success', () async* {
     mockValidation(field: 'email', value: email);
     mockValidation(field: 'password', value: password);
     sut.validateEmail(email);
     sut.validatePassword(password);
-    expectLater(sut.isLoading.stream, emitsInOrder([true, false]));
+    expectLater(sut.isLoading, emitsInOrder([true, false]));
     await sut.auth();
     verify(() => authentication
         .auth(AuthenticationParams(email: email, secret: password))).called(1);
   });
 
   test('Should emit correct events on Authentication on InvalidCredentials',
-      () async {
+      () async* {
     mockValidation(field: 'email', value: email);
     mockValidation(field: 'password', value: password);
     sut.validateEmail(email);
     sut.validatePassword(password);
     mockAuthenticationError(DomainError.invalidCredentials);
-    expectLater(sut.isLoading.stream, emitsInOrder([true, false]));
+    expectLater(sut.isLoading, emitsInOrder([true, false]));
     sut.mainError.listen(expectAsync1(
         (error) => expect(error, DomainError.invalidCredentials.description)));
     await sut.auth();
   });
 
   test('Should emit correct events on Authentication on UnexpectedError',
-      () async {
+      () async* {
     mockValidation(field: 'email', value: email);
     mockValidation(field: 'password', value: password);
     sut.validateEmail(email);
     sut.validatePassword(password);
     mockAuthenticationError(DomainError.unexpected);
-    expectLater(sut.isLoading.stream, emitsInOrder([true, false]));
+    expectLater(sut.isLoading, emitsInOrder([true, false]));
     sut.mainError.listen(expectAsync1(
         (error) => expect(error, DomainError.unexpected.description)));
     await sut.auth();
   });
 
-  test('Should emit UnexpectedError if SaveCurrentAccount fails', () async {
+  test('Should emit UnexpectedError if SaveCurrentAccount fails', () async* {
     mockSaveCurrentAccountError();
     mockValidation(field: 'email', value: email);
     mockValidation(field: 'password', value: password);
     sut.validateEmail(email);
     sut.validatePassword(password);
-    expectLater(sut.isLoading.stream, emitsInOrder([true, false]));
+    expectLater(sut.isLoading, emitsInOrder([true, false]));
     sut.mainError.listen(expectAsync1(
         (error) => expect(error, DomainError.unexpected.description)));
+    await sut.auth();
+  });
+
+  test('Should change page on success', () async {
+    mockValidation(field: 'email', value: email);
+    mockValidation(field: 'password', value: password);
+    sut.validateEmail(email);
+    sut.validatePassword(password);
+    sut.navigateTo.listen(expectAsync1((page) => expect(page, '/surveys')));
     await sut.auth();
   });
 }

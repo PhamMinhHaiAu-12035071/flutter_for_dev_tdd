@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_for_dev_tdd/ui/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/pages.dart';
+import 'package:get/get.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key, this.presenter});
@@ -25,6 +26,12 @@ class LoginPage extends StatelessWidget {
           presenter?.mainError.listen((error) {
             if (error != null) {
               showErrorMessage(context, error);
+            }
+          });
+
+          presenter?.navigateTo.listen((page) {
+            if (page?.isNotEmpty == true) {
+              Get.offAllNamed(page!);
             }
           });
           return SingleChildScrollView(

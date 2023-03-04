@@ -10,4 +10,5 @@ abstract class LoginPresenter {
   RxBool get isFormValid;
   RxBool get isLoading;
   RxnString get mainError;
+  RxnString get navigateTo;
 }

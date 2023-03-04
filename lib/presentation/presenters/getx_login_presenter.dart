@@ -14,16 +14,25 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
 
   String? _email;
   String? _password;
+  final _emailError = RxnString();
+  final _passwordError = RxnString();
+  final _mainError = RxnString();
+  final _isFormValid = RxBool(false);
+  final _isLoading = RxBool(false);
+  final _navigateTo = RxnString();
+
   @override
-  final emailError = RxnString();
+  RxnString get emailError => _emailError;
   @override
-  final passwordError = RxnString();
+  RxnString get passwordError => _passwordError;
   @override
-  final mainError = RxnString();
+  RxBool get isFormValid => _isFormValid;
   @override
-  final isFormValid = RxBool(false);
+  RxBool get isLoading => _isLoading;
   @override
-  final isLoading = RxBool(false);
+  RxnString get mainError => _mainError;
+  @override
+  RxnString get navigateTo => _navigateTo;
 
   GetxLoginPresenter(
       {required this.validation,
@@ -33,36 +42,37 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
   @override
   void validateEmail(String email) {
     _email = email;
-    emailError.value = validation.validate(field: 'email', value: email);
+    _emailError.value = validation.validate(field: 'email', value: email);
     _validateForm();
   }
 
   @override
   void validatePassword(String password) {
     _password = password;
-    passwordError.value =
+    _passwordError.value =
         validation.validate(field: 'password', value: password);
     _validateForm();
   }
 
   void _validateForm() {
-    isFormValid.value = emailError.value == null &&
-        passwordError.value == null &&
+    _isFormValid.value = _emailError.value == null &&
+        _passwordError.value == null &&
         _email != null &&
         _password != null;
   }
 
   @override
   Future<void> auth() async {
-    isLoading.value = true;
+    _isLoading.value = true;
     try {
       final account = await authentication
           .auth(AuthenticationParams(email: _email!, secret: _password!));
       await saveCurrentAccount.save(AccountEntity(account.token));
+      _navigateTo.value = '/surveys';
     } on DomainError catch (error) {
-      mainError.value = error.description;
+      _mainError.value = error.description;
     } finally {
-      isLoading.value = false;
+      _isLoading.value = false;
     }
   }
 }
