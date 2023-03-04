@@ -12,12 +12,16 @@ class ValidationSpy extends Mock implements Validation {}
 
 class AuthenticationSpy extends Mock implements Authentication {}
 
+class SaveCurrentAccountSpy extends Mock implements SaveCurrentAccount {}
+
 void main() {
   late Validation validation;
   late Authentication authentication;
+  late SaveCurrentAccount saveCurrentAccount;
   late LoginPresenter sut;
   late String email;
   late String password;
+  late String token;
 
   When mockValidationCall(String? field, String? value) =>
       when(() => validation.validate(
@@ -29,23 +33,36 @@ void main() {
   When mockAuthenticationCall() => when(() => authentication.auth(any()));
 
   void mockAuthentication({String? field, String? value}) =>
-      mockAuthenticationCall()
-          .thenAnswer((_) async => AccountEntity(faker.guid.guid()));
+      mockAuthenticationCall().thenAnswer((_) async => AccountEntity(token));
   void mockAuthenticationError(DomainError error) =>
       mockAuthenticationCall().thenThrow(error);
+
+  When mockSaveCurrentAccountCall() =>
+      when(() => saveCurrentAccount.save(any()));
+
+  void mockSaveCurrentAccountError() =>
+      mockSaveCurrentAccountCall().thenThrow(Exception());
+  void mockSaveCurrentAccount() =>
+      mockSaveCurrentAccountCall().thenAnswer((_) async => Future.value);
   setUp(() {
     validation = ValidationSpy();
     authentication = AuthenticationSpy();
+    saveCurrentAccount = SaveCurrentAccountSpy();
     sut = GetxLoginPresenter(
-        validation: validation, authentication: authentication);
+        validation: validation,
+        authentication: authentication,
+        saveCurrentAccount: saveCurrentAccount);
     email = faker.internet.email();
     password = faker.internet.password();
+    token = faker.guid.guid();
     mockValidation(field: 'email');
     mockValidation(field: 'password');
     mockAuthentication();
+    mockSaveCurrentAccount();
   });
   setUpAll(() {
     registerFallbackValue(const AuthenticationParams(email: '', secret: ''));
+    registerFallbackValue(const AccountEntity(''));
   });
 
   test('Should call Validation with correct email', () {
@@ -63,10 +80,9 @@ void main() {
   test('Should emit email null if validation succeeds', () {
     mockValidation(field: 'email');
     sut.emailError.listen(expectAsync1((error) => expect(error, null)));
-    // sut.isFormValidStream
-    //     .listen(expectAsync1((isValid) => expect(isValid, false)));
+    sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
     sut.validateEmail(email);
-    // sut.validateEmail(email);
+    sut.validateEmail(email);
   });
 
   test('Should call Validation with correct password', () {
@@ -144,6 +160,15 @@ void main() {
     await sut.auth();
     verify(() => authentication
         .auth(AuthenticationParams(email: email, secret: password))).called(1);
+  });
+
+  test('Should call SaveCurrentAccount with correct values', () async {
+    mockValidation(field: 'email', value: email);
+    mockValidation(field: 'password', value: password);
+    sut.validateEmail(email);
+    sut.validatePassword(password);
+    await sut.auth();
+    verify(() => saveCurrentAccount.save(AccountEntity(token))).called(1);
   });
 
   test('Should emit correct events on Authentication success', () async {
