@@ -49,4 +49,11 @@ void main() {
     final future = sut.load();
     expect(future, throwsA(DomainError.unexpected));
   });
+
+  test('Should throw UnexpectedError if FetchSecureCacheStorage returns null',
+      () async {
+    mockFetchSecure().thenAnswer((_) async => null);
+    final future = sut.load();
+    expect(future, throwsA(DomainError.unexpected));
+  });
 }
