@@ -36,14 +36,15 @@ void main() {
   late LoadCurrentAccount sut;
   late String token;
 
+  When mockFetchSecure() =>
+      when(() => fetchSecureCacheStorage.fetchSecure(any()));
+
   void mockFetchSecureError() {
-    when(() => fetchSecureCacheStorage.fetchSecure(any()))
-        .thenThrow(Exception());
+    mockFetchSecure().thenThrow(Exception());
   }
 
   void mockFetchSecureResult() {
-    when(() => fetchSecureCacheStorage.fetchSecure(any()))
-        .thenAnswer((_) async => Future.value(token));
+    mockFetchSecure().thenAnswer((_) async => token);
   }
 
   setUp(() {
@@ -53,6 +54,7 @@ void main() {
     token = faker.guid.guid();
     mockFetchSecureResult();
   });
+
   test('Should call FetchSecureCacheStorage with correct values', () async {
     await sut.load();
     verify(() => fetchSecureCacheStorage.fetchSecure('token'));
