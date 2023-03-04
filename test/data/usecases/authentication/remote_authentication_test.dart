@@ -15,7 +15,7 @@ void main() {
   late AuthenticationParams params;
 
   Map mockValidData() => {
-        'accessToken': faker.guid.guid(),
+        'token': faker.guid.guid(),
         'name': faker.person.name(),
       };
 
@@ -91,7 +91,7 @@ void main() {
     mockHttpData(validData);
     final account = await sut.auth(params);
 
-    expect(account.token, validData['accessToken']);
+    expect(account.token, validData['token']);
   });
 
   test(

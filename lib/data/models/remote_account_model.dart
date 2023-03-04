@@ -2,16 +2,16 @@ import 'package:flutter_for_dev_tdd/data/http/http.dart';
 import 'package:flutter_for_dev_tdd/domain/entities/account_entity.dart';
 
 class RemoteAccountModel {
-  final String accessToken;
+  final String token;
 
-  RemoteAccountModel(this.accessToken);
+  RemoteAccountModel(this.token);
 
   factory RemoteAccountModel.fromJson(Map json) {
-    if (json.containsKey('accessToken') == false) {
+    if (json.containsKey('token') == false) {
       throw HttpError.invalidData;
     }
-    return RemoteAccountModel(json['accessToken']);
+    return RemoteAccountModel(json['token']);
   }
 
-  AccountEntity toEntity() => AccountEntity(accessToken);
+  AccountEntity toEntity() => AccountEntity(token);
 }

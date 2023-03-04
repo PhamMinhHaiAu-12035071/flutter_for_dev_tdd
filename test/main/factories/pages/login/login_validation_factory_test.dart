@@ -7,7 +7,6 @@ void main() {
     final validations = makeValidations();
     expect(validations, const [
       RequiredFieldValidation('email'),
-      EmailValidation('email'),
       RequiredFieldValidation('password'),
     ]);
   });

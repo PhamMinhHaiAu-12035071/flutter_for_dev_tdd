@@ -8,6 +8,6 @@ Validation makeLoginValidation() {
 }
 
 List<FieldValidation> makeValidations() => [
-      ...ValidationBuilder.field('email').required().email().build(),
+      ...ValidationBuilder.field('email').required().build(),
       ...ValidationBuilder.field('password').required().build(),
     ];

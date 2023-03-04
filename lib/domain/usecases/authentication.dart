@@ -12,7 +12,7 @@ class AuthenticationParams extends Equatable {
   const AuthenticationParams({required this.email, required this.secret});
 
   Map toJSON() {
-    return {'email': email, 'password': secret};
+    return {'username': email, 'password': secret};
   }
 
   @override
