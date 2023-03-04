@@ -41,7 +41,7 @@ void main() {
       when(() => saveCurrentAccount.save(any()));
 
   void mockSaveCurrentAccountError() =>
-      mockSaveCurrentAccountCall().thenThrow(Exception());
+      mockSaveCurrentAccountCall().thenThrow(DomainError.unexpected);
   void mockSaveCurrentAccount() =>
       mockSaveCurrentAccountCall().thenAnswer((_) async => Future.value);
   setUp(() {
@@ -202,6 +202,18 @@ void main() {
     sut.validateEmail(email);
     sut.validatePassword(password);
     mockAuthenticationError(DomainError.unexpected);
+    expectLater(sut.isLoading.stream, emitsInOrder([true, false]));
+    sut.mainError.listen(expectAsync1(
+        (error) => expect(error, DomainError.unexpected.description)));
+    await sut.auth();
+  });
+
+  test('Should emit UnexpectedError if SaveCurrentAccount fails', () async {
+    mockSaveCurrentAccountError();
+    mockValidation(field: 'email', value: email);
+    mockValidation(field: 'password', value: password);
+    sut.validateEmail(email);
+    sut.validatePassword(password);
     expectLater(sut.isLoading.stream, emitsInOrder([true, false]));
     sut.mainError.listen(expectAsync1(
         (error) => expect(error, DomainError.unexpected.description)));
