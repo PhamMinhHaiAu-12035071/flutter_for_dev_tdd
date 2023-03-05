@@ -5,8 +5,9 @@ import 'package:test/test.dart';
 void main() {
   test('Should return the correct validations', () {
     final validations = makeValidations();
-    expect(validations, const [
+    expect(validations, [
       RequiredFieldValidation('email'),
+      EmailValidation('email'),
       RequiredFieldValidation('password'),
     ]);
   });

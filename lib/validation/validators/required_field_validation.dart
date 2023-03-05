@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
+import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
 import 'package:flutter_for_dev_tdd/validation/protocols/protocols.dart';
 
 class RequiredFieldValidation extends Equatable implements FieldValidation {
@@ -8,14 +9,12 @@ class RequiredFieldValidation extends Equatable implements FieldValidation {
 
   final ValidationException exception;
 
-  const RequiredFieldValidation(this.field, [ValidationException? exception])
-      : exception = exception ?? const RequiredFieldValidatorExceptions();
+  RequiredFieldValidation(this.field, [ValidationException? exception])
+      : exception = exception ?? RequiredFieldValidatorExceptions();
 
   @override
   ValidationException? validate(String? value) {
-    return value?.isEmpty == false
-        ? null
-        : const RequiredFieldValidatorExceptions();
+    return value?.isEmpty == false ? null : RequiredFieldValidatorExceptions();
   }
 
   @override
@@ -24,9 +23,7 @@ class RequiredFieldValidation extends Equatable implements FieldValidation {
 
 class RequiredFieldValidatorExceptions implements ValidationException {
   @override
-  final String message = "Field is not empty";
-
-  const RequiredFieldValidatorExceptions();
+  final String message = R.strings.msgRequiredField;
 
   @override
   String toString() => message;

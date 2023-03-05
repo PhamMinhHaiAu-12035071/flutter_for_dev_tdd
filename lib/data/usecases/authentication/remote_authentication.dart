@@ -40,6 +40,6 @@ class RemoteAuthenticationParams {
   }
 
   Map toJSON() {
-    return {'username': email, 'password': password};
+    return {'email': email, 'password': password};
   }
 }

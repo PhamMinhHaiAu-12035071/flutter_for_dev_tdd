@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
+import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
 import 'package:flutter_for_dev_tdd/validation/protocols/protocols.dart';
 
 class EmailValidation extends Equatable implements FieldValidation {
@@ -8,8 +9,8 @@ class EmailValidation extends Equatable implements FieldValidation {
 
   final ValidationException? exception;
 
-  const EmailValidation(this.field, [ValidationException? exception])
-      : exception = exception ?? const EmailValidatorException();
+  EmailValidation(this.field, [ValidationException? exception])
+      : exception = exception ?? EmailValidatorException();
 
   @override
   ValidationException? validate(String? value) {
@@ -24,9 +25,9 @@ class EmailValidation extends Equatable implements FieldValidation {
 
 class EmailValidatorException implements ValidationException {
   @override
-  final String message = "Invalid email";
+  final String message = R.strings.msgInvalidEmail;
 
-  const EmailValidatorException();
+  EmailValidatorException();
 
   @override
   String toString() => message;
