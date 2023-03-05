@@ -3,13 +3,13 @@ import 'package:flutter_for_dev_tdd/ui/pages/splash/splash_presenter.dart';
 import 'package:get/get.dart';
 
 class SplashPage extends StatelessWidget {
-  final SplashScreenPresenter presenter;
+  final SplashPresenter presenter;
 
   const SplashPage({Key? key, required this.presenter}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    presenter.loadCurrentAccount();
+    presenter.checkAccount();
     return Builder(builder: (context) {
       presenter.navigateTo.listen((page) {
         if (page?.isNotEmpty == true) {

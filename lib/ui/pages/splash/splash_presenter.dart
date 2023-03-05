@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-abstract class SplashScreenPresenter {
+abstract class SplashPresenter {
   RxnString get navigateTo;
-  Future<void> loadCurrentAccount();
+  Future<void> checkAccount();
 }

@@ -22,7 +22,7 @@ void main() {
     mockFetchSecure().thenThrow(Exception());
   }
 
-  void mockFetchSecureResult() {
+  void mockFetchSecureResult(String? token) {
     mockFetchSecure().thenAnswer((_) async => token);
   }
 
@@ -31,7 +31,7 @@ void main() {
     sut = LocalLoadCurrentAccount(
         fetchSecureCacheStorage: fetchSecureCacheStorage);
     token = faker.guid.guid();
-    mockFetchSecureResult();
+    mockFetchSecureResult(token);
   });
 
   test('Should call FetchSecureCacheStorage with correct values', () async {
@@ -50,10 +50,9 @@ void main() {
     expect(future, throwsA(DomainError.unexpected));
   });
 
-  test('Should throw UnexpectedError if FetchSecureCacheStorage returns null',
-      () async {
-    mockFetchSecure().thenAnswer((_) async => null);
-    final future = sut.load();
-    expect(future, throwsA(DomainError.unexpected));
+  test('Should return null if FetchSecureCacheStorage returns null', () async {
+    mockFetchSecureResult(null);
+    final account = await sut.load();
+    expect(account, null);
   });
 }

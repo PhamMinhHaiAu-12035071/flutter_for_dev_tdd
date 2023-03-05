@@ -4,10 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mocktail/mocktail.dart';
 
-class SplashScreenPresenterSpy extends Mock implements SplashScreenPresenter {}
+class SplashScreenPresenterSpy extends Mock implements SplashPresenter {}
 
 void main() {
-  late SplashScreenPresenter presenter;
+  late SplashPresenter presenter;
   late RxnString navigateTo;
 
   Future<void> loadPage(widgetTester) async {
@@ -26,7 +26,7 @@ void main() {
     ));
   }
 
-  When mockLoadCurrentAccount() => when(() => presenter.loadCurrentAccount());
+  When mockLoadCurrentAccount() => when(() => presenter.checkAccount());
 
   void mockLoadCurrentAccountSuccess() =>
       mockLoadCurrentAccount().thenAnswer((_) async => {});
@@ -45,10 +45,9 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 
-  testWidgets('Should call loadCurrentAccount on page load',
-      (widgetTester) async {
+  testWidgets('Should call checkAccount on page load', (widgetTester) async {
     await loadPage(widgetTester);
-    verify(() => presenter.loadCurrentAccount()).called(1);
+    verify(() => presenter.checkAccount()).called(1);
   });
 
   testWidgets('Should load page', (widgetTester) async {
