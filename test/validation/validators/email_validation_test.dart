@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 void main() {
   late FieldValidation sut;
   setUp(() {
-    sut = EmailValidation('any_field');
+    sut = const EmailValidation('any_field');
   });
   test('Should return null if email is empty', () {
     final error = sut.validate('');

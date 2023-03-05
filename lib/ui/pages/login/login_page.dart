@@ -5,9 +5,9 @@ import 'package:flutter_for_dev_tdd/ui/pages/pages.dart';
 import 'package:get/get.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key, this.presenter});
+  const LoginPage({super.key, required this.presenter});
 
-  final LoginPresenter? presenter;
+  final LoginPresenter presenter;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class LoginPage extends StatelessWidget {
       onTap: () => _hideKeyboard(context),
       child: Scaffold(
         body: Builder(builder: (context) {
-          presenter?.isLoading.listen((isLoading) {
+          presenter.isLoading.listen((isLoading) {
             if (isLoading == true) {
               showLoading();
             } else {
@@ -23,13 +23,13 @@ class LoginPage extends StatelessWidget {
             }
           });
 
-          presenter?.mainError.listen((error) {
+          presenter.mainError.listen((error) {
             if (error != null) {
               showErrorMessage(context, error);
             }
           });
 
-          presenter?.navigateTo.listen((page) {
+          presenter.navigateTo.listen((page) {
             if (page?.isNotEmpty == true) {
               Get.offAllNamed(page!);
             }
