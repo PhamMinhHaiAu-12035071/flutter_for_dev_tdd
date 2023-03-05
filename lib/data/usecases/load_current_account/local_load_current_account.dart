@@ -1,6 +1,6 @@
 import 'package:flutter_for_dev_tdd/data/cache/cache.dart';
 import 'package:flutter_for_dev_tdd/domain/entities/entities.dart';
-import 'package:flutter_for_dev_tdd/domain/helpers/helpers.dart';
+import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 
 class LocalLoadCurrentAccount implements LoadCurrentAccount {
@@ -12,13 +12,14 @@ class LocalLoadCurrentAccount implements LoadCurrentAccount {
   Future<AccountEntity?> load() async {
     try {
       final token = await fetchSecureCacheStorage.fetchSecure('token');
-      if (token != null) {
-        return AccountEntity(token);
-      } else {
-        return null;
+      if (token == null) {
+        throw NotFoundException();
       }
-    } catch (e) {
-      throw DomainError.unexpected;
+      return AccountEntity(token);
+    } on NotFoundException {
+      rethrow;
+    } catch (_) {
+      throw ReadFileStoredException();
     }
   }
 }

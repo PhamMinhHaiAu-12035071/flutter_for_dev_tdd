@@ -1,6 +1,6 @@
 import 'package:faker/faker.dart';
 import 'package:flutter_for_dev_tdd/domain/entities/entities.dart';
-import 'package:flutter_for_dev_tdd/domain/helpers/helpers.dart';
+import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 import 'package:flutter_for_dev_tdd/presentation/presenters/presenters.dart';
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
@@ -38,14 +38,14 @@ void main() {
 
   void mockAuthentication({String? field, String? value}) =>
       mockAuthenticationCall().thenAnswer((_) async => AccountEntity(token));
-  void mockAuthenticationError(DomainError error) =>
+  void mockAuthenticationError(DomainException error) =>
       mockAuthenticationCall().thenThrow(error);
 
   When mockSaveCurrentAccountCall() =>
       when(() => saveCurrentAccount.save(any()));
 
   void mockSaveCurrentAccountError() =>
-      mockSaveCurrentAccountCall().thenThrow(DomainError.unexpected);
+      mockSaveCurrentAccountCall().thenThrow(WriteFileStoredException());
   void mockSaveCurrentAccount() =>
       mockSaveCurrentAccountCall().thenAnswer((_) async => Future.value);
 
@@ -215,10 +215,10 @@ void main() {
     mockValidation(field: 'password', value: password);
     sut.validateEmail(email);
     sut.validatePassword(password);
-    mockAuthenticationError(DomainError.invalidCredentials);
+    mockAuthenticationError(HttpInvalidCredentialsException());
     expectLater(sut.isLoading, emitsInOrder([true, false]));
-    sut.mainError.listen(expectAsync1(
-        (error) => expect(error, DomainError.invalidCredentials.description)));
+    sut.mainError.listen(expectAsync1((error) =>
+        expect(error?.message, HttpInvalidCredentialsException().message)));
     await sut.auth();
   });
 
@@ -228,10 +228,10 @@ void main() {
     mockValidation(field: 'password', value: password);
     sut.validateEmail(email);
     sut.validatePassword(password);
-    mockAuthenticationError(DomainError.unexpected);
+    mockAuthenticationError(HttpUnexpectedException());
     expectLater(sut.isLoading, emitsInOrder([true, false]));
     sut.mainError.listen(expectAsync1(
-        (error) => expect(error, DomainError.unexpected.description)));
+        (error) => expect(error?.message, HttpUnexpectedException().message)));
     await sut.auth();
   });
 
@@ -242,8 +242,8 @@ void main() {
     sut.validateEmail(email);
     sut.validatePassword(password);
     expectLater(sut.isLoading, emitsInOrder([true, false]));
-    sut.mainError.listen(expectAsync1(
-        (error) => expect(error, DomainError.unexpected.description)));
+    sut.mainError.listen(
+        expectAsync1((error) => expect(error?.message, 'Write file failed')));
     await sut.auth();
   });
 

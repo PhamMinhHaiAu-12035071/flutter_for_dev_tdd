@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_for_dev_tdd/domain/entities/entities.dart';
-import 'package:flutter_for_dev_tdd/domain/helpers/helpers.dart';
+import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/pages.dart';
@@ -69,8 +69,8 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
           .auth(AuthenticationParams(email: _email!, secret: _password!));
       await saveCurrentAccount.save(AccountEntity(account.token));
       _navigateTo.value = '/surveys';
-    } on DomainError catch (error) {
-      _mainError.value = CommonValidationException(error.description);
+    } on DomainException catch (error) {
+      _mainError.value = error;
     } finally {
       _isLoading.value = false;
     }

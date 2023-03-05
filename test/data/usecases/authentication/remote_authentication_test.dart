@@ -1,7 +1,7 @@
 import 'package:faker/faker.dart';
 import 'package:flutter_for_dev_tdd/data/http/http.dart';
 import 'package:flutter_for_dev_tdd/data/usecases/usecases.dart';
-import 'package:flutter_for_dev_tdd/domain/helpers/domain_error.dart';
+import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/authentication.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
@@ -57,33 +57,36 @@ void main() {
     ).called(1);
   });
 
-  test('Should throw UnexpectedError if HttpClient return 400', () async {
+  test('Should throw HttpUnexpectedException if HttpClient return 400',
+      () async {
     mockHttpError(HttpError.badRequest);
     final futureResult = sut.auth(params);
 
-    expect(futureResult, throwsA(DomainError.unexpected));
+    expect(futureResult, throwsA(isA<HttpUnexpectedException>()));
   });
 
-  test('Should throw UnexpectedError if HttpClient return 404', () async {
+  test('Should throw HttpUnexpectedException if HttpClient return 404',
+      () async {
     mockHttpError(HttpError.notFound);
     final futureResult = sut.auth(params);
 
-    expect(futureResult, throwsA(DomainError.unexpected));
+    expect(futureResult, throwsA(isA<HttpUnexpectedException>()));
   });
 
-  test('Should throw UnexpectedError if HttpClient return 500', () async {
+  test('Should throw HttpUnexpectedException if HttpClient return 500',
+      () async {
     mockHttpError(HttpError.serverError);
     final futureResult = sut.auth(params);
 
-    expect(futureResult, throwsA(DomainError.unexpected));
+    expect(futureResult, throwsA(isA<HttpUnexpectedException>()));
   });
 
-  test('Should throw InvalidCredentialsError if HttpClient return 401',
+  test('Should throw HttpInvalidCredentialsException if HttpClient return 401',
       () async {
     mockHttpError(HttpError.unauthorized);
     final futureResult = sut.auth(params);
 
-    expect(futureResult, throwsA(DomainError.invalidCredentials));
+    expect(futureResult, throwsA(isA<HttpInvalidCredentialsException>()));
   });
 
   test('Should return an Account if HttpClient return 200', () async {
@@ -95,7 +98,7 @@ void main() {
   });
 
   test(
-      'Should throw UnexpectedError if HttpClient return 200 with invalid data',
+      'Should throw HttpUnexpectedException if HttpClient return 200 with invalid data',
       () async {
     final body = params.toJSON();
     when(() => httpClient.request(url: url, method: 'post', body: body))
@@ -104,6 +107,6 @@ void main() {
             }));
     final futureResult = sut.auth(params);
 
-    expect(futureResult, throwsA(DomainError.unexpected));
+    expect(futureResult, throwsA(isA<HttpUnexpectedException>()));
   });
 }

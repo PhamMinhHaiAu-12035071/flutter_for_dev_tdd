@@ -1,6 +1,6 @@
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_for_dev_tdd/domain/helpers/helpers.dart';
+import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/login_page.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/login_presenter.dart';
 import 'package:flutter_test/flutter_test.dart';

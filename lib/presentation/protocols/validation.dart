@@ -1,13 +1,10 @@
-import 'package:flutter_for_dev_tdd/domain/helpers/helpers.dart';
+import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 
 abstract class Validation {
   ValidationException? validate({required String field, required String value});
 }
 
-abstract class ValidationException implements DomainException {
-  @override
-  String get message;
-}
+abstract class ValidationException extends DomainException {}
 
 class CommonValidationException implements ValidationException {
   @override

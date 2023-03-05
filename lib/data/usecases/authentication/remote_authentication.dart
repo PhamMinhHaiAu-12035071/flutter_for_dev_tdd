@@ -1,7 +1,7 @@
 import 'package:flutter_for_dev_tdd/data/http/http.dart';
 import 'package:flutter_for_dev_tdd/data/models/models.dart';
 import 'package:flutter_for_dev_tdd/domain/entities/entities.dart';
-import 'package:flutter_for_dev_tdd/domain/helpers/helpers.dart';
+import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 
 class RemoteAuthentication implements Authentication {
@@ -19,9 +19,9 @@ class RemoteAuthentication implements Authentication {
       return RemoteAccountModel.fromJson(httpResponse ?? {}).toEntity();
     } on HttpError catch (error) {
       if (error == HttpError.unauthorized) {
-        throw DomainError.invalidCredentials;
+        throw HttpInvalidCredentialsException();
       }
-      throw DomainError.unexpected;
+      throw HttpUnexpectedException();
     }
   }
 }
