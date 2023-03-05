@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_for_dev_tdd/ui/validation/protocols/protocols.dart';
+import 'package:flutter_for_dev_tdd/validation/protocols/protocols.dart';
 
 class RequiredFieldValidation extends Equatable implements FieldValidation {
   @override

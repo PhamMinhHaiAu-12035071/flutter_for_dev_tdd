@@ -1,6 +1,5 @@
-import 'package:flutter_for_dev_tdd/ui/validation/validators/validators.dart';
-
-import '../../ui/validation/protocols/field_validation.dart';
+import 'package:flutter_for_dev_tdd/validation/protocols/field_validation.dart';
+import 'package:flutter_for_dev_tdd/validation/validators/validators.dart';
 
 class ValidationBuilder {
   static late ValidationBuilder _instance;

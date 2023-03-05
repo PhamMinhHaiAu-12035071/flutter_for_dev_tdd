@@ -1,6 +1,6 @@
 import 'package:flutter_for_dev_tdd/presentation/protocols/validation.dart';
-import 'package:flutter_for_dev_tdd/ui/validation/protocols/protocols.dart';
-import 'package:flutter_for_dev_tdd/ui/validation/validators/validators.dart';
+import 'package:flutter_for_dev_tdd/validation/protocols/protocols.dart';
+import 'package:flutter_for_dev_tdd/validation/validators/validators.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 

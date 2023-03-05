@@ -1,5 +1,5 @@
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
-import 'package:flutter_for_dev_tdd/ui/validation/protocols/protocols.dart';
+import 'package:flutter_for_dev_tdd/validation/protocols/protocols.dart';
 
 class ValidationComposite implements Validation {
   final List<FieldValidation> validations;
