@@ -1,3 +1,4 @@
+import 'package:flutter_for_dev_tdd/domain/helpers/helpers.dart';
 import 'package:get/get.dart';
 
 abstract class LoginPresenter {
@@ -5,10 +6,10 @@ abstract class LoginPresenter {
   void validatePassword(String password);
   Future<void> auth();
 
-  RxnString get emailError;
-  RxnString get passwordError;
+  Rxn<DomainException> get emailError;
+  Rxn<DomainException> get passwordError;
   RxBool get isFormValid;
   RxBool get isLoading;
-  RxnString get mainError;
+  Rxn<DomainException> get mainError;
   RxnString get navigateTo;
 }

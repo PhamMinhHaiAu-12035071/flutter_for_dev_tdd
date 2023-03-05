@@ -1,5 +1,6 @@
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_for_dev_tdd/domain/helpers/helpers.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/login_page.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/login_presenter.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,22 +9,26 @@ import 'package:mocktail/mocktail.dart';
 
 class LoginPresenterSpy extends Mock implements LoginPresenter {}
 
+class DomainExceptionSpy extends Mock implements DomainException {}
+
 void main() {
   late LoginPresenter presenter;
-  late RxnString emailError;
-  late RxnString passwordError;
+  late Rxn<DomainException> emailError;
+  late Rxn<DomainException> passwordError;
   late RxBool isFormValid;
   late RxBool isLoading;
-  late RxnString mainError;
+  late Rxn<DomainException> mainError;
   late RxnString navigateTo;
+  late DomainException domainException;
 
   setUp(() {
-    emailError = RxnString();
-    passwordError = RxnString();
+    emailError = Rxn<DomainException>();
+    passwordError = Rxn<DomainException>();
     isFormValid = RxBool(false);
     isLoading = RxBool(false);
-    mainError = RxnString();
+    mainError = Rxn<DomainException>();
     navigateTo = RxnString();
+    domainException = DomainExceptionSpy();
   });
   void mockStream() {
     when(() => presenter.emailError).thenAnswer((_) => emailError);
@@ -32,6 +37,10 @@ void main() {
     when(() => presenter.isLoading).thenAnswer((_) => isLoading);
     when(() => presenter.mainError).thenAnswer((_) => mainError);
     when(() => presenter.navigateTo).thenAnswer((_) => navigateTo);
+  }
+
+  void mockDomainExceptionMessage(String message) {
+    when(() => domainException.message).thenReturn(message);
   }
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -105,7 +114,8 @@ void main() {
 
   testWidgets('Should present error if email is invalid', (widgetTester) async {
     await loadPage(widgetTester);
-    emailError.value = 'any_error';
+    mockDomainExceptionMessage('any_error');
+    emailError.value = domainException;
 
     await widgetTester.pump();
 
@@ -131,7 +141,7 @@ void main() {
   testWidgets('Should present no error if email is valid',
       (widgetTester) async {
     await loadPage(widgetTester);
-    emailError.value = '';
+    emailError.value = null;
 
     await widgetTester.pump();
 
@@ -147,7 +157,8 @@ void main() {
   testWidgets('Should present error if password is invalid',
       (widgetTester) async {
     await loadPage(widgetTester);
-    passwordError.value = 'any_error';
+    mockDomainExceptionMessage('any_error');
+    passwordError.value = domainException;
 
     await widgetTester.pump();
 
@@ -173,7 +184,7 @@ void main() {
   testWidgets('Should present no error if password is valid',
       (widgetTester) async {
     await loadPage(widgetTester);
-    passwordError.value = '';
+    passwordError.value = null;
 
     await widgetTester.pump();
 
@@ -242,7 +253,8 @@ void main() {
   testWidgets('Should present error if authentication is failed',
       (widgetTester) async {
     await loadPage(widgetTester);
-    mainError.value = 'any_error';
+    mockDomainExceptionMessage('any_error');
+    mainError.value = domainException;
     await widgetTester.pump();
 
     expect(find.text('any_error'), findsOneWidget);

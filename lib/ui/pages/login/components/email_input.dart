@@ -12,9 +12,7 @@ class EmailInput extends StatelessWidget {
     return Obx(() => TextFormField(
           decoration: InputDecoration(
             labelText: 'Email',
-            errorText: presenter.emailError.isEmpty == true
-                ? null
-                : presenter.emailError.value,
+            errorText: presenter.emailError.value?.message,
             icon: Icon(
               Icons.email,
               color: Theme.of(context).primaryColorLight,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_for_dev_tdd/domain/helpers/domain_exception.dart';
 import 'package:flutter_for_dev_tdd/ui/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/pages.dart';
+import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
 import 'package:get/get.dart';
 
 class LoginPage extends StatelessWidget {
@@ -23,9 +25,9 @@ class LoginPage extends StatelessWidget {
             }
           });
 
-          presenter.mainError.listen((error) {
+          presenter.mainError.listen((DomainException? error) {
             if (error != null) {
-              showErrorMessage(context, error);
+              showErrorMessage(context, error.message);
             }
           });
 
@@ -54,7 +56,7 @@ class LoginPage extends StatelessWidget {
                         TextButton.icon(
                           onPressed: () {},
                           icon: const Icon(Icons.person),
-                          label: const Text('Login'),
+                          label: Text(R.strings.addAccount),
                         ),
                       ],
                     ),

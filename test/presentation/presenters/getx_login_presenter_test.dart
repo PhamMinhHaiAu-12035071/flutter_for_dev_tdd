@@ -14,6 +14,8 @@ class AuthenticationSpy extends Mock implements Authentication {}
 
 class SaveCurrentAccountSpy extends Mock implements SaveCurrentAccount {}
 
+class ValidationExceptionSpy extends Mock implements ValidationException {}
+
 void main() {
   late Validation validation;
   late Authentication authentication;
@@ -22,13 +24,15 @@ void main() {
   late String email;
   late String password;
   late String token;
+  late ValidationException validationException;
 
   When mockValidationCall(String? field, String? value) =>
       when(() => validation.validate(
           field: field ?? any(named: 'field'), value: any(named: 'value')));
 
-  void mockValidation({String? field, String? value}) =>
-      mockValidationCall(field, value).thenReturn(value);
+  void mockValidation(
+          {String? field, String? value, ValidationException? error}) =>
+      mockValidationCall(field, value).thenReturn(error);
 
   When mockAuthenticationCall() => when(() => authentication.auth(any()));
 
@@ -44,6 +48,11 @@ void main() {
       mockSaveCurrentAccountCall().thenThrow(DomainError.unexpected);
   void mockSaveCurrentAccount() =>
       mockSaveCurrentAccountCall().thenAnswer((_) async => Future.value);
+
+  void mockValidationExceptionMessage(String message) {
+    when(() => validationException.message).thenReturn(message);
+  }
+
   setUp(() {
     validation = ValidationSpy();
     authentication = AuthenticationSpy();
@@ -52,6 +61,7 @@ void main() {
         validation: validation,
         authentication: authentication,
         saveCurrentAccount: saveCurrentAccount);
+    validationException = ValidationExceptionSpy();
     email = faker.internet.email();
     password = faker.internet.password();
     token = faker.guid.guid();
@@ -71,14 +81,19 @@ void main() {
   });
 
   test('Should emit email errors if validation fails', () {
-    mockValidation(field: 'email', value: 'error');
-    sut.emailError.listen(expectAsync1((error) => expect(error, 'error')));
+    mockValidationExceptionMessage('any_error');
+    mockValidation(
+        field: 'email',
+        value: faker.internet.email(),
+        error: validationException);
+    sut.emailError
+        .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
     sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
     sut.validateEmail(email);
     sut.validateEmail(email);
   });
   test('Should emit email null if validation succeeds', () {
-    mockValidation(field: 'email');
+    mockValidation(field: 'email', value: faker.internet.email());
     sut.emailError.listen(expectAsync1((error) => expect(error, null)));
     sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
     sut.validateEmail(email);
@@ -92,8 +107,11 @@ void main() {
   });
 
   test('Should emit password errors if validation fails', () {
-    mockValidation(field: 'password', value: 'error');
-    sut.passwordError.listen(expectAsync1((error) => expect(error, 'error')));
+    mockValidationExceptionMessage('error');
+    mockValidation(
+        field: 'password', value: 'error', error: validationException);
+    sut.passwordError
+        .listen(expectAsync1((error) => expect(error?.message, 'error')));
     sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
     sut.validatePassword(password);
     sut.validatePassword(password);
@@ -108,8 +126,11 @@ void main() {
 
   group('Should emit isFormValid false if email or password is invalid', () {
     test('with email error', () {
-      mockValidation(field: 'email', value: 'error');
-      sut.emailError.listen(expectAsync1((error) => expect(error, 'error')));
+      mockValidationExceptionMessage('error');
+      mockValidation(
+          field: 'email', value: 'error', error: validationException);
+      sut.emailError
+          .listen(expectAsync1((error) => expect(error?.message, 'error')));
       sut.passwordError.listen(expectAsync1((error) => expect(error, null)));
       sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
       sut.validateEmail(email);
@@ -119,9 +140,12 @@ void main() {
     });
 
     test('with password error', () {
-      mockValidation(field: 'password', value: 'error');
+      mockValidationExceptionMessage('error');
+      mockValidation(
+          field: 'password', value: 'error', error: validationException);
       sut.emailError.listen(expectAsync1((error) => expect(error, null)));
-      sut.passwordError.listen(expectAsync1((error) => expect(error, 'error')));
+      sut.passwordError
+          .listen(expectAsync1((error) => expect(error?.message, 'error')));
       sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
       sut.validateEmail(email);
       sut.validateEmail(email);
@@ -129,10 +153,15 @@ void main() {
       sut.validatePassword(password);
     });
     test('with email and password error', () {
-      mockValidation(field: 'email', value: 'error');
-      mockValidation(field: 'password', value: 'error');
-      sut.emailError.listen(expectAsync1((error) => expect(error, 'error')));
-      sut.passwordError.listen(expectAsync1((error) => expect(error, 'error')));
+      mockValidationExceptionMessage('error');
+      mockValidation(
+          field: 'email', value: 'error', error: validationException);
+      mockValidation(
+          field: 'password', value: 'error', error: validationException);
+      sut.emailError
+          .listen(expectAsync1((error) => expect(error?.message, 'error')));
+      sut.passwordError
+          .listen(expectAsync1((error) => expect(error?.message, 'error')));
       sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
       sut.validateEmail(email);
       sut.validateEmail(email);

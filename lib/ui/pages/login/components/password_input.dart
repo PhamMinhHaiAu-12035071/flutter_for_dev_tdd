@@ -13,9 +13,8 @@ class PasswordInput extends StatelessWidget {
     return Obx(() => TextFormField(
           decoration: InputDecoration(
             labelText: 'Password',
-            errorText: presenter.passwordError.value?.isEmpty == true
-                ? null
-                : presenter.passwordError.value,
+            errorText: presenter.passwordError.value?.message ??
+                presenter.passwordError.value?.message,
             icon: Icon(
               Icons.lock,
               color: Theme.of(context).primaryColorLight,

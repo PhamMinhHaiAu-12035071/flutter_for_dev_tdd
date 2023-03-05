@@ -6,26 +6,34 @@ import 'package:test/test.dart';
 
 class FieldValidationSpy extends Mock implements FieldValidation {}
 
+class ValidationExceptionSpy extends Mock implements ValidationException {}
+
 void main() {
   late FieldValidation validation1;
   late FieldValidation validation2;
   late FieldValidation validation3;
   late Validation sut;
+  late ValidationException validationException;
 
-  void mockValidation1(String? error) {
+  void mockValidation1(ValidationException? error) {
     when(() => validation1.validate(any())).thenReturn(error);
   }
 
-  void mockValidation2(String? error) {
+  void mockValidation2(ValidationException? error) {
     when(() => validation2.validate(any())).thenReturn(error);
   }
 
-  void mockValidation3(String? error) {
+  void mockValidation3(ValidationException? error) {
     when(() => validation3.validate(any())).thenReturn(error);
+  }
+
+  void mockValidationExceptionMessage(String msg) {
+    when(() => validationException.message).thenReturn(msg);
   }
 
   setUp(() {
     validation1 = FieldValidationSpy();
+    validationException = ValidationExceptionSpy();
     when(() => validation1.field).thenReturn('other_field');
     mockValidation1(null);
     validation2 = FieldValidationSpy();
@@ -42,10 +50,16 @@ void main() {
     expect(error, null);
   });
   test('Should return the first error found', () {
-    mockValidation1('error_1');
-    mockValidation2('error_2');
-    mockValidation3('error_3');
+    mockValidationExceptionMessage('error_1');
+    mockValidation1(validationException);
+
+    mockValidationExceptionMessage('error_2');
+    mockValidation2(validationException);
+
+    mockValidationExceptionMessage('error_3');
+    mockValidation3(validationException);
     final error = sut.validate(field: 'any_field', value: 'any_value');
-    expect(error, 'error_3');
+    expect(error, isNotNull);
+    expect(error?.message, 'error_3');
   });
 }

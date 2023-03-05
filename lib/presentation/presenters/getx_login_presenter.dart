@@ -14,23 +14,23 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
 
   String? _email;
   String? _password;
-  final _emailError = RxnString();
-  final _passwordError = RxnString();
-  final _mainError = RxnString();
+  final _emailError = Rxn<DomainException>();
+  final _passwordError = Rxn<DomainException>();
+  final _mainError = Rxn<DomainException>();
   final _isFormValid = RxBool(false);
   final _isLoading = RxBool(false);
   final _navigateTo = RxnString();
 
   @override
-  RxnString get emailError => _emailError;
+  Rxn<DomainException> get emailError => _emailError;
   @override
-  RxnString get passwordError => _passwordError;
+  Rxn<DomainException> get passwordError => _passwordError;
   @override
   RxBool get isFormValid => _isFormValid;
   @override
   RxBool get isLoading => _isLoading;
   @override
-  RxnString get mainError => _mainError;
+  Rxn<DomainException> get mainError => _mainError;
   @override
   RxnString get navigateTo => _navigateTo;
 
@@ -70,7 +70,7 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
       await saveCurrentAccount.save(AccountEntity(account.token));
       _navigateTo.value = '/surveys';
     } on DomainError catch (error) {
-      _mainError.value = error.description;
+      _mainError.value = CommonValidationException(error.description);
     } finally {
       _isLoading.value = false;
     }

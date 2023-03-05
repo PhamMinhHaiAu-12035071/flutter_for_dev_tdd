@@ -1,11 +1,22 @@
+import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
 import 'package:flutter_for_dev_tdd/validation/protocols/protocols.dart';
 import 'package:flutter_for_dev_tdd/validation/validators/validators.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
+
+class ValidationExceptionSpy extends Mock implements ValidationException {}
 
 void main() {
   late FieldValidation sut;
+  late ValidationException validationException;
+
+  void mockValidationExceptionMessage(String message) {
+    when(() => validationException.message).thenReturn(message);
+  }
+
   setUp(() {
-    sut = const EmailValidation('any_field');
+    validationException = ValidationExceptionSpy();
+    sut = EmailValidation('any_field', validationException);
   });
   test('Should return null if email is empty', () {
     final error = sut.validate('');
@@ -21,7 +32,10 @@ void main() {
     expect(error, null);
   });
   test('Should return error if email is invalid', () {
+    mockValidationExceptionMessage('Email invalid');
     final error = sut.validate('phamau1994x');
-    expect(error, 'Email invalid');
+
+    expect(error, isNotNull);
+    expect(error?.message, 'Email invalid');
   });
 }
