@@ -60,4 +60,12 @@ void main() {
     sut.validateEmail(email);
     sut.validateEmail(email);
   });
+
+  test('Should emit email null if validation succeeds', () {
+    mockValidation(field: 'email', value: email);
+    sut.emailError.listen(expectAsync1((error) => expect(error, null)));
+    sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
+    sut.validateEmail(email);
+    sut.validateEmail(email);
+  });
 }

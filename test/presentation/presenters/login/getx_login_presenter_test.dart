@@ -82,10 +82,7 @@ void main() {
 
   test('Should emit email errors if validation fails', () {
     mockValidationExceptionMessage('any_error');
-    mockValidation(
-        field: 'email',
-        value: faker.internet.email(),
-        error: validationException);
+    mockValidation(field: 'email', value: email, error: validationException);
     sut.emailError
         .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
     sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
@@ -93,7 +90,7 @@ void main() {
     sut.validateEmail(email);
   });
   test('Should emit email null if validation succeeds', () {
-    mockValidation(field: 'email', value: faker.internet.email());
+    mockValidation(field: 'email', value: email);
     sut.emailError.listen(expectAsync1((error) => expect(error, null)));
     sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
     sut.validateEmail(email);
