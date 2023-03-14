@@ -7,4 +7,6 @@ abstract class Translations {
   String get notFoundItems;
   String get readFileFailed;
   String get writeFileFailed;
+  String get name;
+  String get confirmPassword;
 }

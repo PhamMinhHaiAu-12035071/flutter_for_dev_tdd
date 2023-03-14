@@ -24,4 +24,10 @@ class EnUs implements Translations {
 
   @override
   String get writeFileFailed => 'Write file failed';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
 }

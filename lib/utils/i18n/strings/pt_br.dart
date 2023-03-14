@@ -24,4 +24,10 @@ class PtBr implements Translations {
 
   @override
   String get writeFileFailed => 'Falha ao escrever o arquivo.';
+
+  @override
+  String get name => 'Nome';
+
+  @override
+  String get confirmPassword => 'Confirmar Senha';
 }
