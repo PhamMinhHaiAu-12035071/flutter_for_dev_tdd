@@ -5,6 +5,7 @@ import 'package:flutter_for_dev_tdd/ui/pages/login/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/pages.dart';
 import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key, required this.presenter});
@@ -44,21 +45,24 @@ class LoginPage extends StatelessWidget {
                 const DisplayLarge(text: 'Login'),
                 Padding(
                   padding: const EdgeInsets.all(32),
-                  child: Form(
-                    child: Column(
-                      children: <Widget>[
-                        const EmailInput(),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 8, bottom: 32),
-                          child: PasswordInput(),
-                        ),
-                        const LoginButton(),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.person),
-                          label: Text(R.strings.addAccount),
-                        ),
-                      ],
+                  child: Provider<LoginPresenter>(
+                    create: (_) => presenter,
+                    child: Form(
+                      child: Column(
+                        children: <Widget>[
+                          const EmailInput(),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 8, bottom: 32),
+                            child: PasswordInput(),
+                          ),
+                          const LoginButton(),
+                          TextButton.icon(
+                            onPressed: () {},
+                            icon: const Icon(Icons.person),
+                            label: Text(R.strings.addAccount),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

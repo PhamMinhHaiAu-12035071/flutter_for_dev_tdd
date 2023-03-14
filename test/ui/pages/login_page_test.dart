@@ -31,12 +31,12 @@ void main() {
     domainException = DomainExceptionSpy();
   });
   void mockStream() {
-    when(() => presenter.emailError).thenAnswer((_) => emailError);
-    when(() => presenter.passwordError).thenAnswer((_) => passwordError);
-    when(() => presenter.isFormValid).thenAnswer((_) => isFormValid);
-    when(() => presenter.isLoading).thenAnswer((_) => isLoading);
-    when(() => presenter.mainError).thenAnswer((_) => mainError);
-    when(() => presenter.navigateTo).thenAnswer((_) => navigateTo);
+    when(() => presenter.emailError).thenAnswer((_) => emailError.stream);
+    when(() => presenter.passwordError).thenAnswer((_) => passwordError.stream);
+    when(() => presenter.isFormValid).thenAnswer((_) => isFormValid.stream);
+    when(() => presenter.isLoading).thenAnswer((_) => isLoading.stream);
+    when(() => presenter.mainError).thenAnswer((_) => mainError.stream);
+    when(() => presenter.navigateTo).thenAnswer((_) => navigateTo.stream);
   }
 
   void mockDomainExceptionMessage(String message) {

@@ -19,6 +19,8 @@ dependencies:
   localstorage:
   carousel_slider:
   intl:
+  flutter_bloc:
+  bloc:
 
 dev_dependencies:
   flutter_test:

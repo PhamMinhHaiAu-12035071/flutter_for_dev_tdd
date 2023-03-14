@@ -22,17 +22,17 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
   final _navigateTo = RxnString();
 
   @override
-  Rxn<DomainException> get emailError => _emailError;
+  Stream<DomainException?> get emailError => _emailError.stream;
   @override
-  Rxn<DomainException> get passwordError => _passwordError;
+  Stream<DomainException?> get passwordError => _passwordError.stream;
   @override
-  RxBool get isFormValid => _isFormValid;
+  Stream<bool> get isFormValid => _isFormValid.stream;
   @override
-  RxBool get isLoading => _isLoading;
+  Stream<bool> get isLoading => _isLoading.stream;
   @override
-  Rxn<DomainException> get mainError => _mainError;
+  Stream<DomainException?> get mainError => _mainError.stream;
   @override
-  RxnString get navigateTo => _navigateTo;
+  Stream<String?> get navigateTo => _navigateTo.stream;
 
   GetxLoginPresenter(
       {required this.validation,
