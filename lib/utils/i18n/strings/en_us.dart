@@ -29,5 +29,5 @@ class EnUs implements Translations {
   String get name => 'Name';
 
   @override
-  String get confirmPassword => 'Confirm Password';
+  String get confirmPassword => 'Password Confirmation';
 }

@@ -25,6 +25,16 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
+    ///Find the name TextFormField
+    final nameTextChildren = find.descendant(
+      of: find.bySemanticsLabel('Name'),
+      matching: find.byType(Text),
+    );
+
+    expect(nameTextChildren, findsOneWidget,
+        reason:
+            'When a TextFormField has only one text child, means it has no errors, since one of the children is always the label text');
+
     /// Find the email TextFormField
     final emailTextChildren = find.descendant(
       of: find.bySemanticsLabel('Email'),
@@ -45,6 +55,16 @@ void main() {
     );
 
     expect(passwordTextChildren, findsOneWidget,
+        reason:
+            'When a TextFormField has only one text child, means it has no errors, since one of the children is always the label text');
+
+    /// Find the password confirmation TextFormField
+    final passwordConfirmationTextChildren = find.descendant(
+      of: find.bySemanticsLabel('Password Confirmation'),
+      matching: find.byType(Text),
+    );
+
+    expect(passwordConfirmationTextChildren, findsOneWidget,
         reason:
             'When a TextFormField has only one text child, means it has no errors, since one of the children is always the label text');
 
