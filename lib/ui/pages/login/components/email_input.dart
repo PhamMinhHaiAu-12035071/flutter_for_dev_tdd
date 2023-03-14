@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/login_presenter.dart';
+import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
 import 'package:get/get.dart';
 
 class EmailInput extends StatelessWidget {
@@ -11,7 +12,7 @@ class EmailInput extends StatelessWidget {
 
     return Obx(() => TextFormField(
           decoration: InputDecoration(
-            labelText: 'Email',
+            labelText: R.strings.email,
             errorText: presenter.emailError.value?.message,
             icon: Icon(
               Icons.email,

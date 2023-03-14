@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_for_dev_tdd/ui/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/signup/components/components.dart';
+import 'package:flutter_for_dev_tdd/ui/pages/signup/signup.dart';
 import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
 
 class SignUpPage extends StatelessWidget {
-  const SignUpPage({super.key});
+  const SignUpPage({super.key, this.presenter});
+
+  final SignUpPresenter? presenter;
 
   @override
   Widget build(BuildContext context) {

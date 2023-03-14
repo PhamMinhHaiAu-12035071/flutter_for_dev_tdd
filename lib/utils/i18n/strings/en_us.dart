@@ -30,4 +30,16 @@ class EnUs implements Translations {
 
   @override
   String get confirmPassword => 'Password Confirmation';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get btnLogin => 'Login';
+
+  @override
+  String get btnSignUp => 'Sign Up';
 }

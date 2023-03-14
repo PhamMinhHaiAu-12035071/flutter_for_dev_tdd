@@ -1,24 +1,47 @@
+import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
-import 'package:flutter_for_dev_tdd/ui/pages/login/login_presenter.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/signup/signup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mocktail/mocktail.dart';
 
-class LoginPresenterSpy extends Mock implements LoginPresenter {}
+class SignUpPresenterSpy extends Mock implements SignUpPresenter {}
 
 class DomainExceptionSpy extends Mock implements DomainException {}
 
 void main() {
+  late SignUpPresenter presenter;
+  late Rxn<DomainException> nameError;
+  late Rxn<DomainException> emailError;
+  late Rxn<DomainException> passwordError;
+  late Rxn<DomainException> passwordConfirmationError;
+
+  setUp(() {
+    nameError = Rxn<DomainException>();
+    emailError = Rxn<DomainException>();
+    passwordError = Rxn<DomainException>();
+    passwordConfirmationError = Rxn<DomainException>();
+  });
+
+  void mockStream() {
+    when(() => presenter.nameError).thenAnswer((_) => nameError);
+    when(() => presenter.emailError).thenAnswer((_) => emailError);
+    when(() => presenter.passwordError).thenAnswer((_) => passwordError);
+    when(() => presenter.passwordConfirmationError)
+        .thenAnswer((_) => passwordConfirmationError);
+  }
+
   Future<void> loadPage(WidgetTester tester) async {
-    final loginPage = GetMaterialApp(
+    presenter = Get.put<SignUpPresenter>(SignUpPresenterSpy());
+    mockStream();
+    final signUpPage = GetMaterialApp(
       initialRoute: '/signup',
       getPages: [
-        GetPage(name: '/signup', page: () => const SignUpPage()),
+        GetPage(name: '/signup', page: () => SignUpPage(presenter: presenter)),
       ],
     );
-    await tester.pumpWidget(loginPage);
+    await tester.pumpWidget(signUpPage);
   }
 
   testWidgets('Should load with correct initial state',
@@ -71,5 +94,48 @@ void main() {
     /// Find the login button
     final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
     expect(button.onPressed, null);
+  });
+
+  testWidgets('Should call validate with correct values', (widgetTester) async {
+    await loadPage(widgetTester);
+
+    /// Enter name
+    final name = faker.person.name();
+    await widgetTester.enterText(find.bySemanticsLabel('Name'), name);
+
+    when(() => presenter.validateName(name)).thenAnswer((_) {
+      return;
+    });
+    verify(() => presenter.validateName(name)).called(1);
+
+    /// Enter email
+    final email = faker.internet.email();
+    await widgetTester.enterText(find.bySemanticsLabel('Email'), email);
+
+    when(() => presenter.validateEmail(email)).thenAnswer((_) {
+      return;
+    });
+    verify(() => presenter.validateEmail(email)).called(1);
+
+    /// Enter password
+    final password = faker.internet.password();
+    await widgetTester.enterText(find.bySemanticsLabel('Password'), password);
+
+    when(() => presenter.validatePassword(password)).thenAnswer((_) {
+      return;
+    });
+    verify(() => presenter.validatePassword(password)).called(1);
+
+    /// Enter password confirmation
+    final passwordConfirmation = faker.internet.password();
+    await widgetTester.enterText(
+        find.bySemanticsLabel('Password Confirmation'), passwordConfirmation);
+
+    when(() => presenter.validatePasswordConfirmation(passwordConfirmation))
+        .thenAnswer((_) {
+      return;
+    });
+    verify(() => presenter.validatePasswordConfirmation(passwordConfirmation))
+        .called(1);
   });
 }

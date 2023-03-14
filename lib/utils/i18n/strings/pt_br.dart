@@ -30,4 +30,16 @@ class PtBr implements Translations {
 
   @override
   String get confirmPassword => 'Confirmar Senha';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Senha';
+
+  @override
+  String get btnLogin => 'Entrar';
+
+  @override
+  String get btnSignUp => 'Cadastrar';
 }

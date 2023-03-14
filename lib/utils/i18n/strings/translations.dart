@@ -9,4 +9,8 @@ abstract class Translations {
   String get writeFileFailed;
   String get name;
   String get confirmPassword;
+  String get email;
+  String get password;
+  String get btnLogin;
+  String get btnSignUp;
 }
