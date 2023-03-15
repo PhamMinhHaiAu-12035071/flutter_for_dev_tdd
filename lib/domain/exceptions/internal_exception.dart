@@ -7,14 +7,27 @@ abstract class InternalException extends DomainException {}
 class NotFoundException implements InternalException {
   @override
   String get message => R.strings.notFoundItems;
+
+  @override
+  List<Object?> get props => [message];
+
+  @override
+  bool? get stringify => true;
+
+  @override
+  String toString() => message;
 }
 
 class ReadFileStoredException implements InternalException {
   @override
   String get message => R.strings.readFileFailed;
-}
 
-class WriteFileStoredException implements InternalException {
   @override
-  String get message => R.strings.writeFileFailed;
+  List<Object?> get props => [message];
+
+  @override
+  bool? get stringify => true;
+
+  @override
+  String toString() => message;
 }

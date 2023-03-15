@@ -5,6 +5,7 @@ import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 import 'package:flutter_for_dev_tdd/presentation/presenters/presenters.dart';
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/login_presenter.dart';
+import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -16,6 +17,10 @@ class SaveCurrentAccountSpy extends Mock implements SaveCurrentAccount {}
 
 class ValidationExceptionSpy extends Mock implements ValidationException {}
 
+class HttpExceptionSpy extends Mock implements HttpException {}
+
+class IOExceptionSpy extends Mock implements DomainException {}
+
 void main() {
   late Validation validation;
   late Authentication authentication;
@@ -25,6 +30,8 @@ void main() {
   late String password;
   late String token;
   late ValidationException validationException;
+  late HttpException httpException;
+  late DomainException ioException;
 
   When mockValidationCall(String? field, String? value) =>
       when(() => validation.validate(
@@ -38,19 +45,31 @@ void main() {
 
   void mockAuthentication({String? field, String? value}) =>
       mockAuthenticationCall().thenAnswer((_) async => AccountEntity(token));
-  void mockAuthenticationError(DomainException error) =>
-      mockAuthenticationCall().thenThrow(error);
+
+  void mockAuthenticationError() {
+    mockAuthenticationCall().thenThrow(httpException);
+  }
 
   When mockSaveCurrentAccountCall() =>
       when(() => saveCurrentAccount.save(any()));
 
-  void mockSaveCurrentAccountError() =>
-      mockSaveCurrentAccountCall().thenThrow(WriteFileStoredException());
   void mockSaveCurrentAccount() =>
       mockSaveCurrentAccountCall().thenAnswer((_) async => Future.value);
 
+  void mockSaveCurrentAccountError() {
+    mockSaveCurrentAccountCall().thenThrow(ioException);
+  }
+
   void mockValidationExceptionMessage(String message) {
     when(() => validationException.message).thenReturn(message);
+  }
+
+  void mockHttpExceptionMessage(String message) {
+    when(() => httpException.message).thenReturn(message);
+  }
+
+  void mockIOExceptionMessage(String message) {
+    when(() => ioException.message).thenReturn(message);
   }
 
   setUp(() {
@@ -62,11 +81,13 @@ void main() {
         authentication: authentication,
         saveCurrentAccount: saveCurrentAccount);
     validationException = ValidationExceptionSpy();
+    httpException = HttpExceptionSpy();
+    ioException = IOExceptionSpy();
     email = faker.internet.email();
     password = faker.internet.password();
     token = faker.guid.guid();
-    mockValidation(field: 'email');
-    mockValidation(field: 'password');
+    mockValidation(field: 'email', value: email);
+    mockValidation(field: 'password', value: password);
     mockAuthentication();
     mockSaveCurrentAccount();
   });
@@ -90,7 +111,6 @@ void main() {
     sut.validateEmail(email);
   });
   test('Should emit email null if validation succeeds', () {
-    mockValidation(field: 'email', value: email);
     sut.emailError.listen(expectAsync1((error) => expect(error, null)));
     sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
     sut.validateEmail(email);
@@ -104,11 +124,11 @@ void main() {
   });
 
   test('Should emit password errors if validation fails', () {
-    mockValidationExceptionMessage('error');
+    mockValidationExceptionMessage('any_error');
     mockValidation(
         field: 'password', value: 'error', error: validationException);
     sut.passwordError
-        .listen(expectAsync1((error) => expect(error?.message, 'error')));
+        .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
     sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
     sut.validatePassword(password);
     sut.validatePassword(password);
@@ -177,8 +197,6 @@ void main() {
   });
 
   test('Should call Authentication with correct values', () async {
-    mockValidation(field: 'email', value: email);
-    mockValidation(field: 'password', value: password);
     sut.validateEmail(email);
     sut.validatePassword(password);
     await sut.auth();
@@ -187,8 +205,6 @@ void main() {
   });
 
   test('Should call SaveCurrentAccount with correct values', () async {
-    mockValidation(field: 'email', value: email);
-    mockValidation(field: 'password', value: password);
     sut.validateEmail(email);
     sut.validatePassword(password);
     await sut.auth();
@@ -196,8 +212,6 @@ void main() {
   });
 
   test('Should emit correct events on Authentication success', () async* {
-    mockValidation(field: 'email', value: email);
-    mockValidation(field: 'password', value: password);
     sut.validateEmail(email);
     sut.validatePassword(password);
     expectLater(sut.isLoading, emitsInOrder([true, false]));
@@ -206,47 +220,47 @@ void main() {
         .auth(AuthenticationParams(email: email, secret: password))).called(1);
   });
 
-  test('Should emit correct events on Authentication on InvalidCredentials',
-      () async* {
-    mockValidation(field: 'email', value: email);
-    mockValidation(field: 'password', value: password);
+  test(
+      'Should emit correct events on Authentication on HttpInvalidCredentialsException',
+      () async {
     sut.validateEmail(email);
     sut.validatePassword(password);
-    mockAuthenticationError(HttpInvalidCredentialsException());
+    mockHttpExceptionMessage(R.strings.httpInvalidCredentials);
+    mockAuthenticationError();
     expectLater(sut.isLoading, emitsInOrder([true, false]));
-    sut.mainError.listen(expectAsync1((error) =>
-        expect(error?.message, HttpInvalidCredentialsException().message)));
+    sut.mainError.listen(expectAsync1((error) {
+      expect(error?.message, R.strings.httpInvalidCredentials);
+    }));
     await sut.auth();
   });
 
-  test('Should emit correct events on Authentication on UnexpectedError',
-      () async* {
-    mockValidation(field: 'email', value: email);
-    mockValidation(field: 'password', value: password);
+  test(
+      'Should emit correct events on Authentication on HttpUnexpectedException',
+      () async {
     sut.validateEmail(email);
     sut.validatePassword(password);
-    mockAuthenticationError(HttpUnexpectedException());
+    mockHttpExceptionMessage(R.strings.httpUnexpected);
+    mockAuthenticationError();
     expectLater(sut.isLoading, emitsInOrder([true, false]));
     sut.mainError.listen(expectAsync1(
-        (error) => expect(error?.message, HttpUnexpectedException().message)));
+        (error) => expect(error?.message, R.strings.httpUnexpected)));
     await sut.auth();
   });
 
-  test('Should emit UnexpectedError if SaveCurrentAccount fails', () async* {
-    mockSaveCurrentAccountError();
-    mockValidation(field: 'email', value: email);
-    mockValidation(field: 'password', value: password);
+  test(
+      'Should emit correct events on SaveCurrentAccount on FileSystemException',
+      () async {
     sut.validateEmail(email);
     sut.validatePassword(password);
+    mockIOExceptionMessage(R.strings.fileSystemException);
+    mockSaveCurrentAccountError();
     expectLater(sut.isLoading, emitsInOrder([true, false]));
-    sut.mainError.listen(
-        expectAsync1((error) => expect(error?.message, 'Write file failed')));
+    sut.mainError.listen(expectAsync1(
+        (error) => expect(error?.message, R.strings.fileSystemException)));
     await sut.auth();
   });
 
   test('Should change page on success', () async {
-    mockValidation(field: 'email', value: email);
-    mockValidation(field: 'password', value: password);
     sut.validateEmail(email);
     sut.validatePassword(password);
     sut.navigateTo.listen(expectAsync1((page) => expect(page, '/surveys')));

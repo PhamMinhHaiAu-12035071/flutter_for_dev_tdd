@@ -1,8 +1,9 @@
+import 'dart:io';
+
 import 'package:faker/faker.dart';
 import 'package:flutter_for_dev_tdd/data/cache/cache.dart';
 import 'package:flutter_for_dev_tdd/data/usecases/usecases.dart';
 import 'package:flutter_for_dev_tdd/domain/entities/account_entity.dart';
-import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
@@ -38,10 +39,9 @@ void main() {
     verify(() => cacheStorage.saveSecure(key: 'token', value: account.token));
   });
 
-  test('Should throw WriteFileStoredException if SaveCacheStorage throws',
-      () async {
+  test('Should throw FileSystemException if SaveCacheStorage throws', () async {
     mockCacheError();
     final future = sut.save(account);
-    expect(future, throwsA(isA<WriteFileStoredException>()));
+    expect(future, throwsA(isA<FileSystemException>()));
   });
 }

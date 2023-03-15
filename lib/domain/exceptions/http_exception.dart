@@ -8,6 +8,12 @@ class HttpInvalidCredentialsException extends HttpException {
 
   @override
   String get message => R.strings.httpInvalidCredentials;
+
+  @override
+  List<Object?> get props => [message];
+
+  @override
+  String toString() => message;
 }
 
 class HttpUnexpectedException extends HttpException {
@@ -15,4 +21,10 @@ class HttpUnexpectedException extends HttpException {
 
   @override
   String get message => R.strings.httpUnexpected;
+
+  @override
+  List<Object?> get props => [message];
+
+  @override
+  String toString() => message;
 }

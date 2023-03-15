@@ -6,7 +6,7 @@ abstract class Translations {
   String get httpUnexpected;
   String get notFoundItems;
   String get readFileFailed;
-  String get writeFileFailed;
+  String get fileSystemException;
   String get name;
   String get confirmPassword;
   String get email;

@@ -23,7 +23,7 @@ class PtBr implements Translations {
   String get readFileFailed => 'Falha ao ler o arquivo.';
 
   @override
-  String get writeFileFailed => 'Falha ao escrever o arquivo.';
+  String get fileSystemException => 'Exceção do sistema de arquivos.';
 
   @override
   String get name => 'Nome';

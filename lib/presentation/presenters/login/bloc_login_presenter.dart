@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_for_dev_tdd/domain/entities/entities.dart';
 import 'package:flutter_for_dev_tdd/domain/exceptions/domain_exception.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
@@ -12,7 +13,7 @@ class LoginState extends Equatable {
   final DomainException? passwordError;
   final bool isFormValid;
   final bool isLoading;
-  final String mainError;
+  final DomainException? mainError;
   final String navigateTo;
 
   const LoginState({
@@ -33,7 +34,7 @@ class LoginState extends Equatable {
         passwordError: null,
         isFormValid: false,
         isLoading: false,
-        mainError: '',
+        mainError: null,
         navigateTo: '',
       );
 
@@ -44,7 +45,7 @@ class LoginState extends Equatable {
     DomainException? passwordError,
     bool? isFormValid,
     bool? isLoading,
-    String? mainError,
+    DomainException? mainError,
     String? navigateTo,
   }) {
     return LoginState(
@@ -84,9 +85,25 @@ class BlocLoginPresenter extends Cubit<LoginState> implements LoginPresenter {
   final SaveCurrentAccount saveCurrentAccount;
 
   @override
-  Future<void> auth() {
-    // TODO: implement auth
-    throw UnimplementedError();
+  Future<void> auth() async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      /// credentials login
+      final account = await authentication.auth(
+        AuthenticationParams(
+          email: state.email!,
+          secret: state.password!,
+        ),
+      );
+
+      /// save account in cache
+      await saveCurrentAccount.save(AccountEntity(account.token));
+
+      /// navigate to home page
+      emit(state.copyWith(navigateTo: '/surveys', isLoading: false));
+    } on DomainException catch (error) {
+      emit(state.copyWith(mainError: error, isLoading: false));
+    }
   }
 
   @override
@@ -97,31 +114,34 @@ class BlocLoginPresenter extends Cubit<LoginState> implements LoginPresenter {
   Stream<bool> get isFormValid => stream.map((state) => state.isFormValid);
 
   @override
-  // TODO: implement isLoading
-  Stream<bool> get isLoading => throw UnimplementedError();
+  Stream<bool> get isLoading => stream.map((state) => state.isLoading);
 
   @override
-  // TODO: implement mainError
-  Stream<DomainException?> get mainError => throw UnimplementedError();
+  Stream<DomainException?> get mainError =>
+      stream.map((state) => state.mainError);
 
   @override
-  // TODO: implement navigateTo
-  Stream<String?> get navigateTo => throw UnimplementedError();
+  Stream<String?> get navigateTo => stream.map((state) => state.navigateTo);
 
   @override
-  // TODO: implement passwordError
-  Stream<DomainException?> get passwordError => throw UnimplementedError();
+  Stream<DomainException?> get passwordError =>
+      stream.map((state) => state.passwordError);
 
   @override
   void validateEmail(String email) {
-    final emailError = validation.validate(field: 'email', value: email);
-    emit(state.copyWith(email: email, emailError: emailError));
+    emit(state.copyWith(
+        email: email,
+        emailError: validation.validate(field: 'email', value: email)));
     _validateForm();
   }
 
   @override
   void validatePassword(String password) {
-    // TODO: implement validatePassword
+    emit(state.copyWith(
+      password: password,
+      passwordError: validation.validate(field: 'password', value: password),
+    ));
+    _validateForm();
   }
 
   void _validateForm() {

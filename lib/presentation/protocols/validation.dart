@@ -14,4 +14,10 @@ class CommonValidationException implements ValidationException {
 
   @override
   String toString() => message;
+
+  @override
+  List<Object?> get props => [message];
+
+  @override
+  bool? get stringify => true;
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_for_dev_tdd/domain/exceptions/domain_exception.dart';
+import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/ui/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/pages.dart';

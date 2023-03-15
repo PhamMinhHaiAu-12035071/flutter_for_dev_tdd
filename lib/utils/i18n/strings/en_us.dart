@@ -23,7 +23,7 @@ class EnUs implements Translations {
   String get readFileFailed => 'Read file failed';
 
   @override
-  String get writeFileFailed => 'Write file failed';
+  String get fileSystemException => 'File system exception';
 
   @override
   String get name => 'Name';
