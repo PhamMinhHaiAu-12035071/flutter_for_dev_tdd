@@ -1,4 +1,9 @@
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_for_dev_tdd/presentation/presenters/presenters.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/pages.dart';
+
+class LoginPresenterSpy extends MockCubit<LoginState>
+    implements CubitLoginPresenter {}
 
 void main() {
   late LoginPresenter presenter;

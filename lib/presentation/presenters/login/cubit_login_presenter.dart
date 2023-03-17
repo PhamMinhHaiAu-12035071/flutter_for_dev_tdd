@@ -73,8 +73,8 @@ class LoginState extends Equatable {
       ];
 }
 
-class BlocLoginPresenter extends Cubit<LoginState> implements LoginPresenter {
-  BlocLoginPresenter({
+class CubitLoginPresenter extends Cubit<LoginState> implements LoginPresenter {
+  CubitLoginPresenter({
     required this.validation,
     required this.authentication,
     required this.saveCurrentAccount,

@@ -2,7 +2,7 @@ import 'package:faker/faker.dart';
 import 'package:flutter_for_dev_tdd/domain/entities/entities.dart';
 import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
-import 'package:flutter_for_dev_tdd/presentation/presenters/login/bloc_login_presenter.dart';
+import 'package:flutter_for_dev_tdd/presentation/presenters/login/cubit_login_presenter.dart';
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/login/login.dart';
 import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
@@ -76,7 +76,7 @@ void main() {
     validation = ValidationSpy();
     authentication = AuthenticationSpy();
     saveCurrentAccount = SaveCurrentAccountSpy();
-    sut = BlocLoginPresenter(
+    sut = CubitLoginPresenter(
       validation: validation,
       authentication: authentication,
       saveCurrentAccount: saveCurrentAccount,
