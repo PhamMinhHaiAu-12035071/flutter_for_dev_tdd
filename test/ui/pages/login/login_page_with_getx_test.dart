@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
@@ -13,30 +15,38 @@ class DomainExceptionSpy extends Mock implements DomainException {}
 
 void main() {
   late LoginPresenter presenter;
-  late Rxn<DomainException> emailError;
-  late Rxn<DomainException> passwordError;
-  late RxBool isFormValid;
-  late RxBool isLoading;
-  late Rxn<DomainException> mainError;
-  late RxnString navigateTo;
+  late StreamController<DomainException?> emailErrorController;
+  late StreamController<DomainException?> passwordErrorController;
+  late StreamController<bool> isFormValidController;
+  late StreamController<bool> isLoadingController;
+  late StreamController<DomainException> mainErrorController;
+  late StreamController<String> navigateToController;
   late DomainException domainException;
 
   setUp(() {
-    emailError = Rxn<DomainException>();
-    passwordError = Rxn<DomainException>();
-    isFormValid = RxBool(false);
-    isLoading = RxBool(false);
-    mainError = Rxn<DomainException>();
-    navigateTo = RxnString();
+    emailErrorController = StreamController<DomainException?>();
+    passwordErrorController = StreamController<DomainException?>();
+    isFormValidController = StreamController<bool>();
+    isFormValidController.add(false);
+    isLoadingController = StreamController<bool>();
+    isLoadingController.add(false);
+    mainErrorController = StreamController<DomainException>();
+    navigateToController = StreamController<String>();
     domainException = DomainExceptionSpy();
   });
   void mockStream() {
-    when(() => presenter.emailError).thenAnswer((_) => emailError.stream);
-    when(() => presenter.passwordError).thenAnswer((_) => passwordError.stream);
-    when(() => presenter.isFormValid).thenAnswer((_) => isFormValid.stream);
-    when(() => presenter.isLoading).thenAnswer((_) => isLoading.stream);
-    when(() => presenter.mainError).thenAnswer((_) => mainError.stream);
-    when(() => presenter.navigateTo).thenAnswer((_) => navigateTo.stream);
+    when(() => presenter.emailError)
+        .thenAnswer((_) => emailErrorController.stream);
+    when(() => presenter.passwordError)
+        .thenAnswer((_) => passwordErrorController.stream);
+    when(() => presenter.isFormValid)
+        .thenAnswer((_) => isFormValidController.stream);
+    when(() => presenter.isLoading)
+        .thenAnswer((_) => isLoadingController.stream);
+    when(() => presenter.mainError)
+        .thenAnswer((_) => mainErrorController.stream);
+    when(() => presenter.navigateTo)
+        .thenAnswer((_) => navigateToController.stream);
   }
 
   void mockDomainExceptionMessage(String message) {
@@ -115,7 +125,8 @@ void main() {
   testWidgets('Should present error if email is invalid', (widgetTester) async {
     await loadPage(widgetTester);
     mockDomainExceptionMessage('any_error');
-    emailError.value = domainException;
+
+    emailErrorController.add(domainException);
 
     await widgetTester.pump();
 
@@ -125,7 +136,8 @@ void main() {
   testWidgets('Should present no error if email is valid',
       (widgetTester) async {
     await loadPage(widgetTester);
-    emailError.value = null;
+
+    emailErrorController.add(null);
 
     await widgetTester.pump();
 
@@ -141,8 +153,7 @@ void main() {
   testWidgets('Should present no error if email is valid',
       (widgetTester) async {
     await loadPage(widgetTester);
-    emailError.value = null;
-
+    emailErrorController.add(null);
     await widgetTester.pump();
 
     expect(
@@ -158,8 +169,7 @@ void main() {
       (widgetTester) async {
     await loadPage(widgetTester);
     mockDomainExceptionMessage('any_error');
-    passwordError.value = domainException;
-
+    passwordErrorController.add(domainException);
     await widgetTester.pump();
 
     expect(find.text('any_error'), findsOneWidget);
@@ -168,10 +178,8 @@ void main() {
   testWidgets('Should present no error if password is valid',
       (widgetTester) async {
     await loadPage(widgetTester);
-    passwordError.value = null;
-
+    passwordErrorController.add(null);
     await widgetTester.pump();
-
     expect(
       find.descendant(
         of: find.bySemanticsLabel('Password'),
@@ -184,10 +192,8 @@ void main() {
   testWidgets('Should present no error if password is valid',
       (widgetTester) async {
     await loadPage(widgetTester);
-    passwordError.value = null;
-
+    passwordErrorController.add(null);
     await widgetTester.pump();
-
     expect(
       find.descendant(
         of: find.bySemanticsLabel('Password'),
@@ -199,7 +205,7 @@ void main() {
 
   testWidgets('Should enable button if form is valid', (widgetTester) async {
     await loadPage(widgetTester);
-    isFormValid.value = true;
+    isFormValidController.add(true);
     await widgetTester.pump();
     final button =
         widgetTester.widget<ElevatedButton>(find.byType(ElevatedButton));
@@ -208,7 +214,7 @@ void main() {
 
   testWidgets('Should disable button if form is invalid', (widgetTester) async {
     await loadPage(widgetTester);
-    isFormValid.value = false;
+    isFormValidController.add(false);
     await widgetTester.pump();
     final button =
         widgetTester.widget<ElevatedButton>(find.byType(ElevatedButton));
@@ -218,7 +224,7 @@ void main() {
   testWidgets('Should call authentication on form submit',
       (widgetTester) async {
     await loadPage(widgetTester);
-    isFormValid.value = true;
+    isFormValidController.add(true);
     await widgetTester.pumpAndSettle();
     await widgetTester.ensureVisible(find.byType(ElevatedButton));
     expect(find.byType(ElevatedButton), findsOneWidget);
@@ -234,7 +240,7 @@ void main() {
   testWidgets('Should present loading when form is submit',
       (widgetTester) async {
     await loadPage(widgetTester);
-    isLoading.value = true;
+    isLoadingController.add(true);
     await widgetTester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -242,9 +248,9 @@ void main() {
 
   testWidgets('Should hidden loading', (widgetTester) async {
     await loadPage(widgetTester);
-    isLoading.value = true;
+    isLoadingController.add(true);
     await widgetTester.pump();
-    isLoading.value = false;
+    isLoadingController.add(false);
     await widgetTester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -254,7 +260,7 @@ void main() {
       (widgetTester) async {
     await loadPage(widgetTester);
     mockDomainExceptionMessage('any_error');
-    mainError.value = domainException;
+    mainErrorController.add(domainException);
     await widgetTester.pump();
 
     expect(find.text('any_error'), findsOneWidget);
@@ -262,7 +268,7 @@ void main() {
 
   testWidgets('Should change page', (widgetTester) async {
     await loadPage(widgetTester);
-    navigateTo.value = '/any_route';
+    navigateToController.add('/any_route');
     await widgetTester.pumpAndSettle();
 
     expect(Get.currentRoute, '/any_route');

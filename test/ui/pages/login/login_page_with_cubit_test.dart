@@ -72,4 +72,8 @@ void main() {
     final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
     expect(button.onPressed, null);
   });
+
+  testWidgets('Should call validate with correct values', (widgetTester) async {
+    await loadPage(widgetTester);
+  });
 }
