@@ -223,4 +223,12 @@ void main() {
     expectLater(sut.mainError, emitsInOrder([null, ioException]));
     await sut.auth();
   });
+
+  test('Should change page on success', () async {
+    sut.validateEmail(email);
+    sut.validatePassword(password);
+    sut.navigateTo.listen(expectAsync1((page) => emitsInOrder(['', '/surveys']),
+        count: 2, max: -1, reason: 'Should not be called'));
+    await sut.auth();
+  });
 }
