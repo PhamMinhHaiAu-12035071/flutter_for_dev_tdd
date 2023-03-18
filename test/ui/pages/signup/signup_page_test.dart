@@ -18,6 +18,7 @@ void main() {
   late StreamController<DomainException?> emailErrorController;
   late StreamController<DomainException?> passwordErrorController;
   late StreamController<DomainException?> passwordConfirmationErrorController;
+  late StreamController<bool> isFormValidController;
   late DomainException domainException;
 
   setUp(() {
@@ -25,6 +26,7 @@ void main() {
     emailErrorController = StreamController<DomainException?>();
     passwordErrorController = StreamController<DomainException?>();
     passwordConfirmationErrorController = StreamController<DomainException?>();
+    isFormValidController = StreamController<bool>();
     domainException = DomainExceptionSpy();
   });
 
@@ -37,6 +39,8 @@ void main() {
         .thenAnswer((_) => passwordErrorController.stream);
     when(() => presenter.passwordConfirmationError)
         .thenAnswer((_) => passwordConfirmationErrorController.stream);
+    when(() => presenter.isFormValid)
+        .thenAnswer((_) => isFormValidController.stream);
   }
 
   void mockDomainExceptionMessage(String message) {
@@ -220,5 +224,46 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  testWidgets('Should present error if confirm password is invalid',
+      (widgetTester) async {
+    await loadPage(widgetTester);
+    mockDomainExceptionMessage('any_error');
+    passwordConfirmationErrorController.add(domainException);
+    await widgetTester.pump();
+    expect(find.text('any_error'), findsOneWidget);
+  });
+
+  testWidgets('Should present no error if confirm password is valid',
+      (widgetTester) async {
+    await loadPage(widgetTester);
+    passwordConfirmationErrorController.add(null);
+    await widgetTester.pump();
+    expect(
+      find.descendant(
+        of: find.bySemanticsLabel('Password Confirmation'),
+        matching: find.byType(Text),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Should enable button if form is valid', (widgetTester) async {
+    await loadPage(widgetTester);
+    isFormValidController.add(true);
+    await widgetTester.pump();
+    final button =
+        widgetTester.widget<ElevatedButton>(find.byType(ElevatedButton));
+    expect(button.onPressed, isNotNull);
+  });
+
+  testWidgets('Should disable button if form is valid', (widgetTester) async {
+    await loadPage(widgetTester);
+    isFormValidController.add(false);
+    await widgetTester.pump();
+    final button =
+        widgetTester.widget<ElevatedButton>(find.byType(ElevatedButton));
+    expect(button.onPressed, null);
   });
 }
