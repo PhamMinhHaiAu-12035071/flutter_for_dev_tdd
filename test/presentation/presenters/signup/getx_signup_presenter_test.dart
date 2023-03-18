@@ -11,11 +11,14 @@ class ValidationSpy extends Mock implements Validation {}
 
 class AddAccountSpy extends Mock implements AddAccount {}
 
+class SaveCurrentAccountSpy extends Mock implements SaveCurrentAccount {}
+
 class ValidationExceptionSpy extends Mock implements ValidationException {}
 
 void main() {
   late Validation validation;
   late AddAccount addAccount;
+  late SaveCurrentAccount saveCurrentAccount;
   late SignUpPresenter sut;
   late ValidationException validationException;
   late String name;
@@ -51,12 +54,19 @@ void main() {
   void mockAddAccount() =>
       mockAddAccountCall().thenAnswer((_) async => AccountEntity(token));
 
+  When mockSaveCurrentAccountCall() =>
+      when(() => saveCurrentAccount.save(any()));
+
+  void mockSaveCurrentAccount() =>
+      mockSaveCurrentAccountCall().thenAnswer((_) async => Future.value);
   setUp(() {
     validation = ValidationSpy();
     addAccount = AddAccountSpy();
+    saveCurrentAccount = SaveCurrentAccountSpy();
     sut = GetxSignUpPresenter(
       validation: validation,
       addAccount: addAccount,
+      saveCurrentAccount: saveCurrentAccount,
     );
     name = faker.internet.userName();
     email = faker.internet.email();
@@ -69,6 +79,7 @@ void main() {
     mockValidation(field: 'passwordConfirmation', value: passwordConfirmation);
     mockValidation(field: 'name', value: name);
     mockAddAccount();
+    mockSaveCurrentAccount();
   });
 
   setUpAll(() {
@@ -78,6 +89,7 @@ void main() {
       password: '',
       passwordConfirmation: '',
     ));
+    registerFallbackValue(const AccountEntity(''));
   });
 
   test('Should call Validation with correct email', () {
@@ -241,6 +253,10 @@ void main() {
     /// TODO: write continue testcase missing
   });
 
+  group('Should call signUp method when isFormValid emits true', () {
+    /// TODO: write continue testcase missing
+  });
+
   test('Should emit isFormValid true if all fields are valid', () async {
     sut.nameError.listen(expectAsync1((error) => expect(error, null)));
     sut.emailError.listen(expectAsync1((error) => expect(error, null)));
@@ -259,5 +275,27 @@ void main() {
         email: email,
         password: password,
         passwordConfirmation: passwordConfirmation))).called(1);
+  });
+
+  test('Should call SaveCurrentAccount with correct values', () async {
+    executeValidate();
+    await sut.signUp();
+    verify(() => saveCurrentAccount.save(AccountEntity(token))).called(1);
+  });
+
+  test('Should call AddAccount and SaveAccount with correct values', () async {
+    executeValidate();
+    await sut.signUp();
+    verify(() => addAccount.add(AddAccountParams(
+        name: name,
+        email: email,
+        password: password,
+        passwordConfirmation: passwordConfirmation))).called(1);
+    verify(() => saveCurrentAccount.save(AccountEntity(token))).called(1);
+  });
+  test('Should emit correct events on AddAccount success', () async {
+    executeValidate();
+    expectLater(sut.isLoading, emitsInOrder([true, false]));
+    await sut.signUp();
   });
 }

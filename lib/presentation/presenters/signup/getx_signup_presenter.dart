@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
   final Validation validation;
   final AddAccount addAccount;
+  final SaveCurrentAccount saveCurrentAccount;
 
   String? _name;
   String? _email;
@@ -18,10 +19,13 @@ class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
   final _passwordError = Rxn<DomainException>();
   final _passwordConfirmationError = Rxn<DomainException>();
   final _isFormValid = RxBool(false);
+  final _isLoading = RxBool(false);
+  final _mainError = Rxn<DomainException>();
 
   GetxSignUpPresenter({
     required this.validation,
     required this.addAccount,
+    required this.saveCurrentAccount,
   });
 
   @override
@@ -31,8 +35,7 @@ class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
   Stream<bool> get isFormValid => _isFormValid.stream;
 
   @override
-  // TODO: implement isLoading
-  Stream<bool> get isLoading => throw UnimplementedError();
+  Stream<bool> get isLoading => _isLoading.stream;
 
   @override
   // TODO: implement mainError
@@ -56,14 +59,23 @@ class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
   Future<void> signUp() async {
     if (_isFormValid.value == false) return;
 
-    await addAccount.add(
-      AddAccountParams(
-        name: _name!,
-        email: _email!,
-        password: _password!,
-        passwordConfirmation: _passwordConfirmation!,
-      ),
-    );
+    _isLoading.value = true;
+    try {
+      final account = await addAccount.add(
+        AddAccountParams(
+          name: _name!,
+          email: _email!,
+          password: _password!,
+          passwordConfirmation: _passwordConfirmation!,
+        ),
+      );
+
+      await saveCurrentAccount.save(account);
+    } on DomainException catch (error) {
+      _mainError.value = error;
+    } finally {
+      _isLoading.value = false;
+    }
   }
 
   @override

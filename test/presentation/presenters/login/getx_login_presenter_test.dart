@@ -191,6 +191,10 @@ void main() {
     executeValidate();
   });
 
+  group('Should call auth method when isFormValid emits true', () {
+    /// TODO: write testcase missing
+  });
+
   test('Should call Authentication with correct values', () async {
     executeValidate();
     await sut.auth();
@@ -201,6 +205,15 @@ void main() {
   test('Should call SaveCurrentAccount with correct values', () async {
     executeValidate();
     await sut.auth();
+    verify(() => saveCurrentAccount.save(AccountEntity(token))).called(1);
+  });
+
+  test('Should call Authentication and SaveCurrentAccount with correct values',
+      () async {
+    executeValidate();
+    await sut.auth();
+    verify(() => authentication
+        .auth(AuthenticationParams(email: email, secret: password))).called(1);
     verify(() => saveCurrentAccount.save(AccountEntity(token))).called(1);
   });
 
