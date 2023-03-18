@@ -33,6 +33,13 @@ void main() {
   late HttpException httpException;
   late DomainException ioException;
 
+  void executeValidate() {
+    sut.validateEmail(email);
+    sut.validateEmail(email);
+    sut.validatePassword(password);
+    sut.validatePassword(password);
+  }
+
   When mockValidationCall(String? field, String? value) =>
       when(() => validation.validate(
           field: field ?? any(named: 'field'), value: any(named: 'value')));
@@ -142,13 +149,6 @@ void main() {
   });
 
   group('Should emit isFormValid false if any field is invalid', () {
-    void executeValidate() {
-      sut.validateEmail(email);
-      sut.validateEmail(email);
-      sut.validatePassword(password);
-      sut.validatePassword(password);
-    }
-
     test('with email error', () {
       mockValidationExceptionMessage('error');
       mockValidation(
@@ -188,10 +188,7 @@ void main() {
     sut.emailError.listen(expectAsync1((error) => expect(error, null)));
     sut.passwordError.listen(expectAsync1((error) => expect(error, null)));
     expectLater(sut.isFormValid, emitsInOrder([false, true]));
-    sut.validateEmail(email);
-    sut.validateEmail(email);
-    sut.validatePassword(password);
-    sut.validatePassword(password);
+    executeValidate();
   });
 
   test('Should call Authentication with correct values', () async {

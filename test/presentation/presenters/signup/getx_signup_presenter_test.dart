@@ -37,6 +37,17 @@ void main() {
     when(() => validationException.message).thenReturn(message);
   }
 
+  void executeValidate() {
+    sut.validateName(name);
+    sut.validateName(name);
+    sut.validateEmail(email);
+    sut.validateEmail(email);
+    sut.validatePassword(password);
+    sut.validatePassword(password);
+    sut.validatePasswordConfirmation(passwordConfirmation);
+    sut.validatePasswordConfirmation(passwordConfirmation);
+  }
+
   setUp(() {
     validation = ValidationSpy();
     authentication = AuthenticationSpy();
@@ -153,17 +164,6 @@ void main() {
   });
 
   group('Should emit isFormValid false if any field is invalid', () {
-    void executeValidate() {
-      sut.validateName(name);
-      sut.validateName(name);
-      sut.validateEmail(email);
-      sut.validateEmail(email);
-      sut.validatePassword(password);
-      sut.validatePassword(password);
-      sut.validatePasswordConfirmation(passwordConfirmation);
-      sut.validatePasswordConfirmation(passwordConfirmation);
-    }
-
     test('with email error', () async {
       mockValidationExceptionMessage('any_error');
       mockValidation(field: 'email', value: email, error: validationException);
@@ -227,5 +227,15 @@ void main() {
     });
 
     /// TODO: write continue testcase missing
+  });
+
+  test('Should emit isFormValid true if all fields are valid', () async {
+    sut.nameError.listen(expectAsync1((error) => expect(error, null)));
+    sut.emailError.listen(expectAsync1((error) => expect(error, null)));
+    sut.passwordError.listen(expectAsync1((error) => expect(error, null)));
+    sut.passwordConfirmationError
+        .listen(expectAsync1((error) => expect(error, null)));
+    expectLater(sut.isFormValid, emitsInOrder([false, true]));
+    executeValidate();
   });
 }
