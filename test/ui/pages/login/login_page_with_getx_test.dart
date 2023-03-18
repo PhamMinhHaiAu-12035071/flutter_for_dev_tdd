@@ -281,5 +281,10 @@ void main() {
     await widgetTester.pumpAndSettle();
 
     expect(Get.currentRoute, '/login');
+
+    navigateToController.add(null);
+    await widgetTester.pumpAndSettle();
+
+    expect(Get.currentRoute, '/login');
   });
 }

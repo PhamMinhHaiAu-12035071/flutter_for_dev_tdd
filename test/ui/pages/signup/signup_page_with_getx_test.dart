@@ -338,5 +338,10 @@ void main() {
     await widgetTester.pumpAndSettle();
 
     expect(Get.currentRoute, '/signup');
+
+    navigateToController.add(null);
+    await widgetTester.pumpAndSettle();
+
+    expect(Get.currentRoute, '/signup');
   });
 }
