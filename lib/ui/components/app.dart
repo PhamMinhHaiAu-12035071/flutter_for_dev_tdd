@@ -19,7 +19,9 @@ class App extends StatelessWidget {
       getPages: [
         GetPage(name: '/', page: makeSplashPage, transition: Transition.fadeIn),
         GetPage(
-            name: '/login', page: makeLoginPage, transition: Transition.fadeIn),
+            name: '/login',
+            page: makeCubitLoginPage,
+            transition: Transition.fadeIn),
         GetPage(
             name: '/surveys',
             page: () => const Scaffold(body: Text('Surveys'))),

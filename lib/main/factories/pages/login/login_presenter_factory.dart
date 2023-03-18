@@ -12,3 +12,13 @@ LoginPresenter makeGetxLoginPresenter() {
       authentication: authentication,
       saveCurrentAccount: saveCurrentAccount);
 }
+
+LoginPresenter makeCubitLoginPresenter() {
+  final authentication = makeRemoteAuthentication();
+  final validation = makeLoginValidation();
+  final saveCurrentAccount = makeLocalSaveCurrentAccount();
+  return CubitLoginPresenter(
+      validation: validation,
+      authentication: authentication,
+      saveCurrentAccount: saveCurrentAccount);
+}

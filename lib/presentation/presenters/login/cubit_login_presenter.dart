@@ -10,7 +10,9 @@ class LoginState extends Equatable {
   final String? email;
   final String? password;
   final DomainException? emailError;
+  final bool isEmailValid;
   final DomainException? passwordError;
+  final bool isPasswordValid;
   final bool isFormValid;
   final bool isLoading;
   final DomainException? mainError;
@@ -20,7 +22,9 @@ class LoginState extends Equatable {
     required this.email,
     required this.password,
     required this.emailError,
+    required this.isEmailValid,
     required this.passwordError,
+    required this.isPasswordValid,
     required this.isFormValid,
     required this.isLoading,
     required this.mainError,
@@ -31,7 +35,9 @@ class LoginState extends Equatable {
         email: null,
         password: null,
         emailError: null,
+        isEmailValid: false,
         passwordError: null,
+        isPasswordValid: false,
         isFormValid: false,
         isLoading: false,
         mainError: null,
@@ -42,7 +48,9 @@ class LoginState extends Equatable {
     String? email,
     String? password,
     DomainException? emailError,
+    bool? isEmailValid,
     DomainException? passwordError,
+    bool? isPasswordValid,
     bool? isFormValid,
     bool? isLoading,
     DomainException? mainError,
@@ -51,8 +59,13 @@ class LoginState extends Equatable {
     return LoginState(
       email: email ?? this.email,
       password: password ?? this.password,
-      emailError: emailError ?? this.emailError,
-      passwordError: passwordError ?? this.passwordError,
+      emailError:
+          isEmailValid == true ? emailError : (emailError ?? this.emailError),
+      isEmailValid: isEmailValid ?? this.isEmailValid,
+      passwordError: isPasswordValid == true
+          ? passwordError
+          : (passwordError ?? this.passwordError),
+      isPasswordValid: isPasswordValid ?? this.isPasswordValid,
       isFormValid: isFormValid ?? this.isFormValid,
       isLoading: isLoading ?? this.isLoading,
       mainError: mainError ?? this.mainError,
@@ -129,17 +142,19 @@ class CubitLoginPresenter extends Cubit<LoginState> implements LoginPresenter {
 
   @override
   void validateEmail(String email) {
+    final validate = validation.validate(field: 'email', value: email);
     emit(state.copyWith(
-        email: email,
-        emailError: validation.validate(field: 'email', value: email)));
+        email: email, emailError: validate, isEmailValid: validate == null));
     _validateForm();
   }
 
   @override
   void validatePassword(String password) {
+    final validate = validation.validate(field: 'password', value: password);
     emit(state.copyWith(
       password: password,
-      passwordError: validation.validate(field: 'password', value: password),
+      passwordError: validate,
+      isPasswordValid: validate == null,
     ));
     _validateForm();
   }
@@ -151,5 +166,13 @@ class CubitLoginPresenter extends Cubit<LoginState> implements LoginPresenter {
           state.email != null &&
           state.password != null,
     ));
+  }
+
+  @override
+  void onChange(Change<LoginState> change) {
+    super.onChange(change);
+    print(change.toString());
+    print(change.currentState.toString());
+    print(change.nextState.toString());
   }
 }

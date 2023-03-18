@@ -45,8 +45,9 @@ class LoginPage extends StatelessWidget {
                 const DisplayLarge(text: 'Login'),
                 Padding(
                   padding: const EdgeInsets.all(32),
-                  child: Provider<LoginPresenter>(
-                    create: (_) => presenter,
+                  child: StreamProvider<LoginPresenter>.value(
+                    initialData: presenter,
+                    value: Stream<LoginPresenter>.value(presenter),
                     child: Form(
                       child: Column(
                         children: <Widget>[
