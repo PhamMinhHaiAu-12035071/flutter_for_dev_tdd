@@ -177,4 +177,25 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('Should present error if name is invalid', (widgetTester) async {
+    await loadPage(widgetTester);
+    mockDomainExceptionMessage('any_error');
+    nameErrorController.add(domainException);
+    await widgetTester.pump();
+    expect(find.text('any_error'), findsOneWidget);
+  });
+
+  testWidgets('Should present no error if name is valid', (widgetTester) async {
+    await loadPage(widgetTester);
+    nameErrorController.add(null);
+    await widgetTester.pump();
+    expect(
+      find.descendant(
+        of: find.bySemanticsLabel('Name'),
+        matching: find.byType(Text),
+      ),
+      findsOneWidget,
+    );
+  });
 }
