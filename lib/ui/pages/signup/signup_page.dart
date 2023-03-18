@@ -26,44 +26,53 @@ class _SignUpPageState extends State<SignUpPage> {
     return GestureDetector(
       onTap: () => _hideKeyboard(context),
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const LoginHeader(),
-              const DisplayLarge(text: 'Login'),
-              Padding(
-                padding: const EdgeInsets.all(32),
-                child: StreamProvider<SignUpPresenter>.value(
-                  value: Stream<SignUpPresenter>.value(widget.presenter),
-                  initialData: widget.presenter,
-                  child: Form(
-                    child: Column(
-                      children: <Widget>[
-                        const NameInput(),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: EmailInput(),
-                        ),
-                        const PasswordInput(),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 8, bottom: 32),
-                          child: PasswordConfirmationInput(),
-                        ),
-                        const SignUpButton(),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.exit_to_app),
-                          label: Text(R.strings.addAccount),
-                        ),
-                      ],
+        body: Builder(builder: (context) {
+          widget.presenter.isLoading.listen((isLoading) {
+            if (isLoading == true) {
+              showLoading();
+            } else {
+              hideLoading(context);
+            }
+          });
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const LoginHeader(),
+                const DisplayLarge(text: 'Login'),
+                Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: StreamProvider<SignUpPresenter>.value(
+                    initialData: widget.presenter,
+                    value: Stream<SignUpPresenter>.value(widget.presenter),
+                    child: Form(
+                      child: Column(
+                        children: <Widget>[
+                          const NameInput(),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            child: EmailInput(),
+                          ),
+                          const PasswordInput(),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 8, bottom: 32),
+                            child: PasswordConfirmationInput(),
+                          ),
+                          const SignUpButton(),
+                          TextButton.icon(
+                            onPressed: () {},
+                            icon: const Icon(Icons.exit_to_app),
+                            label: Text(R.strings.addAccount),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

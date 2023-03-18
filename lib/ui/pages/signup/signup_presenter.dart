@@ -6,11 +6,12 @@ abstract class SignUpPresenter {
   Stream<DomainException?> get passwordError;
   Stream<DomainException?> get passwordConfirmationError;
   Stream<bool> get isFormValid;
+  Stream<bool> get isLoading;
 
   void validateName(String name);
   void validateEmail(String email);
   void validatePassword(String password);
   void validatePasswordConfirmation(String passwordConfirmation);
-  void signUp();
+  Future<void> signUp();
   void dispose();
 }

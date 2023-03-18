@@ -232,7 +232,7 @@ void main() {
         widgetTester.widget<ElevatedButton>(find.byType(ElevatedButton));
     expect(button.onPressed, isNotNull);
     await widgetTester.pump();
-    when(presenter.auth).thenAnswer((_) async {});
+    when(() => presenter.auth()).thenAnswer((_) async {});
     await widgetTester.tap(find.byType(ElevatedButton));
     verify(() => presenter.auth()).called(1);
   });

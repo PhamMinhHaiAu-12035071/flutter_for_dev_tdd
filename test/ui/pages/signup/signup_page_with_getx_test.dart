@@ -19,6 +19,7 @@ void main() {
   late StreamController<DomainException?> passwordErrorController;
   late StreamController<DomainException?> passwordConfirmationErrorController;
   late StreamController<bool> isFormValidController;
+  late StreamController<bool> isLoadingController;
   late DomainException domainException;
 
   setUp(() {
@@ -27,6 +28,9 @@ void main() {
     passwordErrorController = StreamController<DomainException?>();
     passwordConfirmationErrorController = StreamController<DomainException?>();
     isFormValidController = StreamController<bool>();
+    isFormValidController.add(false);
+    isLoadingController = StreamController<bool>();
+    isLoadingController.add(false);
     domainException = DomainExceptionSpy();
   });
 
@@ -41,6 +45,8 @@ void main() {
         .thenAnswer((_) => passwordConfirmationErrorController.stream);
     when(() => presenter.isFormValid)
         .thenAnswer((_) => isFormValidController.stream);
+    when(() => presenter.isLoading)
+        .thenAnswer((_) => isLoadingController.stream);
   }
 
   void mockDomainExceptionMessage(String message) {
@@ -265,5 +271,25 @@ void main() {
     final button =
         widgetTester.widget<ElevatedButton>(find.byType(ElevatedButton));
     expect(button.onPressed, null);
+  });
+
+  testWidgets('Should call signup on form submit', (widgetTester) async {
+    await loadPage(widgetTester);
+    isFormValidController.add(true);
+    await widgetTester.pump();
+    final button = find.byType(ElevatedButton);
+    await widgetTester.ensureVisible(button);
+    when(() => presenter.signUp()).thenAnswer((_) async {});
+    await widgetTester.tap(button);
+    await widgetTester.pump();
+    verify(() => presenter.signUp()).called(1);
+  });
+
+  testWidgets('Should present loading when form is submit',
+      (widgetTester) async {
+    await loadPage(widgetTester);
+    isLoadingController.add(true);
+    await widgetTester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
