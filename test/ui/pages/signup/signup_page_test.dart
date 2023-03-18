@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
@@ -12,24 +14,27 @@ class DomainExceptionSpy extends Mock implements DomainException {}
 
 void main() {
   late SignUpPresenter presenter;
-  late Rxn<DomainException> nameError;
-  late Rxn<DomainException> emailError;
-  late Rxn<DomainException> passwordError;
-  late Rxn<DomainException> passwordConfirmationError;
+  late StreamController<DomainException?> nameErrorController;
+  late StreamController<DomainException?> emailErrorController;
+  late StreamController<DomainException?> passwordErrorController;
+  late StreamController<DomainException?> passwordConfirmationErrorController;
 
   setUp(() {
-    nameError = Rxn<DomainException>();
-    emailError = Rxn<DomainException>();
-    passwordError = Rxn<DomainException>();
-    passwordConfirmationError = Rxn<DomainException>();
+    nameErrorController = StreamController<DomainException?>();
+    emailErrorController = StreamController<DomainException?>();
+    passwordErrorController = StreamController<DomainException?>();
+    passwordConfirmationErrorController = StreamController<DomainException?>();
   });
 
   void mockStream() {
-    when(() => presenter.nameError).thenAnswer((_) => nameError);
-    when(() => presenter.emailError).thenAnswer((_) => emailError);
-    when(() => presenter.passwordError).thenAnswer((_) => passwordError);
+    when(() => presenter.nameError)
+        .thenAnswer((_) => nameErrorController.stream);
+    when(() => presenter.emailError)
+        .thenAnswer((_) => emailErrorController.stream);
+    when(() => presenter.passwordError)
+        .thenAnswer((_) => passwordErrorController.stream);
     when(() => presenter.passwordConfirmationError)
-        .thenAnswer((_) => passwordConfirmationError);
+        .thenAnswer((_) => passwordConfirmationErrorController.stream);
   }
 
   Future<void> loadPage(WidgetTester tester) async {
