@@ -20,6 +20,7 @@ void main() {
   late StreamController<DomainException?> passwordConfirmationErrorController;
   late StreamController<bool> isFormValidController;
   late StreamController<bool> isLoadingController;
+  late StreamController<DomainException?> mainErrorController;
   late DomainException domainException;
 
   setUp(() {
@@ -31,6 +32,7 @@ void main() {
     isFormValidController.add(false);
     isLoadingController = StreamController<bool>();
     isLoadingController.add(false);
+    mainErrorController = StreamController<DomainException?>();
     domainException = DomainExceptionSpy();
   });
 
@@ -47,6 +49,8 @@ void main() {
         .thenAnswer((_) => isFormValidController.stream);
     when(() => presenter.isLoading)
         .thenAnswer((_) => isLoadingController.stream);
+    when(() => presenter.mainError)
+        .thenAnswer((_) => mainErrorController.stream);
   }
 
   void mockDomainExceptionMessage(String message) {
@@ -301,5 +305,14 @@ void main() {
     await widgetTester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  testWidgets('Should present error if signup is failed', (widgetTester) async {
+    await loadPage(widgetTester);
+    mockDomainExceptionMessage('any_error');
+    mainErrorController.add(domainException);
+    await widgetTester.pump();
+
+    expect(find.text('any_error'), findsOneWidget);
   });
 }

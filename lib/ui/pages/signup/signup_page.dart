@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/ui/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/signup/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/signup/signup.dart';
@@ -34,6 +35,13 @@ class _SignUpPageState extends State<SignUpPage> {
               hideLoading(context);
             }
           });
+
+          widget.presenter.mainError.listen((DomainException? error) {
+            if (error != null) {
+              showErrorMessage(context, error.message);
+            }
+          });
+
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
