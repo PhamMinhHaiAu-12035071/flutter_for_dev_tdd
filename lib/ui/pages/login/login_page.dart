@@ -7,10 +7,21 @@ import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.presenter});
 
   final LoginPresenter presenter;
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  @override
+  void dispose() {
+    super.dispose();
+    widget.presenter.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +29,7 @@ class LoginPage extends StatelessWidget {
       onTap: () => _hideKeyboard(context),
       child: Scaffold(
         body: Builder(builder: (context) {
-          presenter.isLoading.listen((isLoading) {
+          widget.presenter.isLoading.listen((isLoading) {
             if (isLoading == true) {
               showLoading();
             } else {
@@ -26,13 +37,13 @@ class LoginPage extends StatelessWidget {
             }
           });
 
-          presenter.mainError.listen((DomainException? error) {
+          widget.presenter.mainError.listen((DomainException? error) {
             if (error != null) {
               showErrorMessage(context, error.message);
             }
           });
 
-          presenter.navigateTo.listen((page) {
+          widget.presenter.navigateTo.listen((page) {
             if (page?.isNotEmpty == true) {
               Get.offAllNamed(page!);
             }
@@ -46,8 +57,8 @@ class LoginPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(32),
                   child: StreamProvider<LoginPresenter>.value(
-                    initialData: presenter,
-                    value: Stream<LoginPresenter>.value(presenter),
+                    initialData: widget.presenter,
+                    value: Stream<LoginPresenter>.value(widget.presenter),
                     child: Form(
                       child: Column(
                         children: <Widget>[

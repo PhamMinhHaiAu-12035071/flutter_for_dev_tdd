@@ -231,4 +231,19 @@ void main() {
         count: 2, max: -1, reason: 'Should not be called'));
     await sut.auth();
   });
+
+  test('Should close streams on dispose', () {
+    mockValidationExceptionMessage('any_error');
+    mockValidation(field: 'email', value: email, error: validationException);
+    sut.emailError
+        .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
+    sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
+
+    sut.validateEmail(email);
+    sut.validateEmail(email);
+
+    sut.dispose();
+    mockValidation(field: 'email', value: email);
+    sut.validateEmail(email);
+  });
 }

@@ -142,6 +142,7 @@ class CubitLoginPresenter extends Cubit<LoginState> implements LoginPresenter {
 
   @override
   void validateEmail(String email) {
+    if (isClosed) return;
     final validate = validation.validate(field: 'email', value: email);
     emit(state.copyWith(
         email: email, emailError: validate, isEmailValid: validate == null));
@@ -150,6 +151,7 @@ class CubitLoginPresenter extends Cubit<LoginState> implements LoginPresenter {
 
   @override
   void validatePassword(String password) {
+    if (isClosed) return;
     final validate = validation.validate(field: 'password', value: password);
     emit(state.copyWith(
       password: password,
@@ -169,10 +171,7 @@ class CubitLoginPresenter extends Cubit<LoginState> implements LoginPresenter {
   }
 
   @override
-  void onChange(Change<LoginState> change) {
-    super.onChange(change);
-    print(change.toString());
-    print(change.currentState.toString());
-    print(change.nextState.toString());
+  void dispose() {
+    close();
   }
 }

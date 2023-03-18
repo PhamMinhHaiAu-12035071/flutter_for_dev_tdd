@@ -78,4 +78,15 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
       _isLoading.value = false;
     }
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailError.close();
+    _passwordError.close();
+    _mainError.close();
+    _isFormValid.close();
+    _isLoading.close();
+    _navigateTo.close();
+  }
 }
