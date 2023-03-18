@@ -11,7 +11,7 @@ class EmailInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final presenter = context.watch<SignUpPresenter>();
     return StreamBuilder<DomainException?>(
-        stream: null,
+        stream: presenter.emailError,
         builder: (context, snapshot) {
           return TextFormField(
             decoration: InputDecoration(

@@ -18,12 +18,14 @@ void main() {
   late StreamController<DomainException?> emailErrorController;
   late StreamController<DomainException?> passwordErrorController;
   late StreamController<DomainException?> passwordConfirmationErrorController;
+  late DomainException domainException;
 
   setUp(() {
     nameErrorController = StreamController<DomainException?>();
     emailErrorController = StreamController<DomainException?>();
     passwordErrorController = StreamController<DomainException?>();
     passwordConfirmationErrorController = StreamController<DomainException?>();
+    domainException = DomainExceptionSpy();
   });
 
   void mockStream() {
@@ -35,6 +37,10 @@ void main() {
         .thenAnswer((_) => passwordErrorController.stream);
     when(() => presenter.passwordConfirmationError)
         .thenAnswer((_) => passwordConfirmationErrorController.stream);
+  }
+
+  void mockDomainExceptionMessage(String message) {
+    when(() => domainException.message).thenReturn(message);
   }
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -142,5 +148,16 @@ void main() {
     });
     verify(() => presenter.validatePasswordConfirmation(passwordConfirmation))
         .called(1);
+  });
+
+  testWidgets('Should present error if email is invalid', (widgetTester) async {
+    await loadPage(widgetTester);
+    mockDomainExceptionMessage('any_error');
+
+    emailErrorController.add(domainException);
+
+    await widgetTester.pump();
+
+    expect(find.text('any_error'), findsOneWidget);
   });
 }

@@ -14,7 +14,7 @@ class PasswordInput extends StatelessWidget {
     final presenter = context.watch<SignUpPresenter>();
 
     return StreamBuilder<DomainException?>(
-        stream: null,
+        stream: presenter.passwordError,
         builder: (context, snapshot) {
           return TextFormField(
             decoration: InputDecoration(
