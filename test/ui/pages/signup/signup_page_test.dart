@@ -198,4 +198,27 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('Should present error if password is invalid',
+      (widgetTester) async {
+    await loadPage(widgetTester);
+    mockDomainExceptionMessage('any_error');
+    passwordErrorController.add(domainException);
+    await widgetTester.pump();
+    expect(find.text('any_error'), findsOneWidget);
+  });
+
+  testWidgets('Should present no error if password is valid',
+      (widgetTester) async {
+    await loadPage(widgetTester);
+    passwordErrorController.add(null);
+    await widgetTester.pump();
+    expect(
+      find.descendant(
+        of: find.bySemanticsLabel('Password'),
+        matching: find.byType(Text),
+      ),
+      findsOneWidget,
+    );
+  });
 }
