@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 
 class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
   final Validation validation;
-  final Authentication authentication;
   final AddAccount addAccount;
 
   String? _name;
@@ -22,7 +21,6 @@ class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
 
   GetxSignUpPresenter({
     required this.validation,
-    required this.authentication,
     required this.addAccount,
   });
 
@@ -55,9 +53,17 @@ class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
   Stream<DomainException?> get passwordError => _passwordError.stream;
 
   @override
-  Future<void> signUp() {
-    // TODO: implement signUp
-    throw UnimplementedError();
+  Future<void> signUp() async {
+    if (_isFormValid.value == false) return;
+
+    await addAccount.add(
+      AddAccountParams(
+        name: _name!,
+        email: _email!,
+        password: _password!,
+        passwordConfirmation: _passwordConfirmation!,
+      ),
+    );
   }
 
   @override

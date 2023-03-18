@@ -192,23 +192,20 @@ void main() {
   });
 
   test('Should call Authentication with correct values', () async {
-    sut.validateEmail(email);
-    sut.validatePassword(password);
+    executeValidate();
     await sut.auth();
     verify(() => authentication
         .auth(AuthenticationParams(email: email, secret: password))).called(1);
   });
 
   test('Should call SaveCurrentAccount with correct values', () async {
-    sut.validateEmail(email);
-    sut.validatePassword(password);
+    executeValidate();
     await sut.auth();
     verify(() => saveCurrentAccount.save(AccountEntity(token))).called(1);
   });
 
   test('Should emit correct events on Authentication success', () async* {
-    sut.validateEmail(email);
-    sut.validatePassword(password);
+    executeValidate();
     expectLater(sut.isLoading, emitsInOrder([true, false]));
     await sut.auth();
     verify(() => authentication
@@ -218,8 +215,7 @@ void main() {
   test(
       'Should emit correct events on Authentication on HttpInvalidCredentialsException',
       () async {
-    sut.validateEmail(email);
-    sut.validatePassword(password);
+    executeValidate();
     mockHttpExceptionMessage(R.strings.httpInvalidCredentials);
     mockAuthenticationError();
     expectLater(sut.isLoading, emitsInOrder([true, false]));
@@ -232,8 +228,7 @@ void main() {
   test(
       'Should emit correct events on Authentication on HttpUnexpectedException',
       () async {
-    sut.validateEmail(email);
-    sut.validatePassword(password);
+    executeValidate();
     mockHttpExceptionMessage(R.strings.httpUnexpected);
     mockAuthenticationError();
     expectLater(sut.isLoading, emitsInOrder([true, false]));
@@ -245,8 +240,7 @@ void main() {
   test(
       'Should emit correct events on SaveCurrentAccount on FileSystemException',
       () async {
-    sut.validateEmail(email);
-    sut.validatePassword(password);
+    executeValidate();
     mockIOExceptionMessage(R.strings.fileSystemException);
     mockSaveCurrentAccountError();
     expectLater(sut.isLoading, emitsInOrder([true, false]));
@@ -256,8 +250,7 @@ void main() {
   });
 
   test('Should change page on success', () async {
-    sut.validateEmail(email);
-    sut.validatePassword(password);
+    executeValidate();
     sut.navigateTo.listen(expectAsync1((page) => expect(page, '/surveys')));
     await sut.auth();
   });

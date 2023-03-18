@@ -1,4 +1,5 @@
 import 'package:faker/faker.dart';
+import 'package:flutter_for_dev_tdd/domain/entities/entities.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 import 'package:flutter_for_dev_tdd/presentation/presenters/presenters.dart';
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
@@ -8,15 +9,12 @@ import 'package:mocktail/mocktail.dart';
 
 class ValidationSpy extends Mock implements Validation {}
 
-class AuthenticationSpy extends Mock implements Authentication {}
-
 class AddAccountSpy extends Mock implements AddAccount {}
 
 class ValidationExceptionSpy extends Mock implements ValidationException {}
 
 void main() {
   late Validation validation;
-  late Authentication authentication;
   late AddAccount addAccount;
   late SignUpPresenter sut;
   late ValidationException validationException;
@@ -24,6 +22,7 @@ void main() {
   late String email;
   late String password;
   late String passwordConfirmation;
+  late String token;
 
   When mockValidationCall(String? field, String? value) =>
       when(() => validation.validate(
@@ -48,24 +47,37 @@ void main() {
     sut.validatePasswordConfirmation(passwordConfirmation);
   }
 
+  When mockAddAccountCall() => when(() => addAccount.add(any()));
+  void mockAddAccount() =>
+      mockAddAccountCall().thenAnswer((_) async => AccountEntity(token));
+
   setUp(() {
     validation = ValidationSpy();
-    authentication = AuthenticationSpy();
     addAccount = AddAccountSpy();
     sut = GetxSignUpPresenter(
       validation: validation,
-      authentication: authentication,
       addAccount: addAccount,
     );
     name = faker.internet.userName();
     email = faker.internet.email();
     password = faker.internet.password();
     passwordConfirmation = faker.internet.password();
+    token = faker.guid.guid();
     validationException = ValidationExceptionSpy();
     mockValidation(field: 'email', value: email);
     mockValidation(field: 'password', value: password);
     mockValidation(field: 'passwordConfirmation', value: passwordConfirmation);
     mockValidation(field: 'name', value: name);
+    mockAddAccount();
+  });
+
+  setUpAll(() {
+    registerFallbackValue(const AddAccountParams(
+      name: '',
+      email: '',
+      password: '',
+      passwordConfirmation: '',
+    ));
   });
 
   test('Should call Validation with correct email', () {
@@ -237,5 +249,15 @@ void main() {
         .listen(expectAsync1((error) => expect(error, null)));
     expectLater(sut.isFormValid, emitsInOrder([false, true]));
     executeValidate();
+  });
+
+  test('Should call AddAccount with correct values', () async {
+    executeValidate();
+    await sut.signUp();
+    verify(() => addAccount.add(AddAccountParams(
+        name: name,
+        email: email,
+        password: password,
+        passwordConfirmation: passwordConfirmation))).called(1);
   });
 }
