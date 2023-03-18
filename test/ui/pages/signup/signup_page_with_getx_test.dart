@@ -21,6 +21,7 @@ void main() {
   late StreamController<bool> isFormValidController;
   late StreamController<bool> isLoadingController;
   late StreamController<DomainException?> mainErrorController;
+  late StreamController<String?> navigateToController;
   late DomainException domainException;
 
   setUp(() {
@@ -33,6 +34,7 @@ void main() {
     isLoadingController = StreamController<bool>();
     isLoadingController.add(false);
     mainErrorController = StreamController<DomainException?>();
+    navigateToController = StreamController<String?>();
     domainException = DomainExceptionSpy();
   });
 
@@ -51,6 +53,8 @@ void main() {
         .thenAnswer((_) => isLoadingController.stream);
     when(() => presenter.mainError)
         .thenAnswer((_) => mainErrorController.stream);
+    when(() => presenter.navigateTo)
+        .thenAnswer((_) => navigateToController.stream);
   }
 
   void mockDomainExceptionMessage(String message) {
@@ -64,6 +68,9 @@ void main() {
       initialRoute: '/signup',
       getPages: [
         GetPage(name: '/signup', page: () => SignUpPage(presenter: presenter)),
+        GetPage(
+            name: '/any_route',
+            page: () => const Scaffold(body: Text('fake page'))),
       ],
     );
     await tester.pumpWidget(signUpPage);
@@ -314,5 +321,14 @@ void main() {
     await widgetTester.pump();
 
     expect(find.text('any_error'), findsOneWidget);
+  });
+
+  testWidgets('Should change page', (widgetTester) async {
+    await loadPage(widgetTester);
+    navigateToController.add('/any_route');
+    await widgetTester.pumpAndSettle();
+
+    expect(Get.currentRoute, '/any_route');
+    expect(find.text('fake page'), findsOneWidget);
   });
 }

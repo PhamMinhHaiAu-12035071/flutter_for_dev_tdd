@@ -20,7 +20,7 @@ void main() {
   late StreamController<bool> isFormValidController;
   late StreamController<bool> isLoadingController;
   late StreamController<DomainException> mainErrorController;
-  late StreamController<String> navigateToController;
+  late StreamController<String?> navigateToController;
   late DomainException domainException;
 
   setUp(() {
@@ -31,7 +31,7 @@ void main() {
     isLoadingController = StreamController<bool>();
     isLoadingController.add(false);
     mainErrorController = StreamController<DomainException>();
-    navigateToController = StreamController<String>();
+    navigateToController = StreamController<String?>();
     domainException = DomainExceptionSpy();
   });
   void mockStream() {

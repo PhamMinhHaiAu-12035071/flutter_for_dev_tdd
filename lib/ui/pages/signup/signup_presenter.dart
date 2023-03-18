@@ -6,6 +6,7 @@ abstract class SignUpPresenter {
   Stream<DomainException?> get passwordError;
   Stream<DomainException?> get passwordConfirmationError;
   Stream<DomainException?> get mainError;
+  Stream<String?> get navigateTo;
   Stream<bool> get isFormValid;
   Stream<bool> get isLoading;
 

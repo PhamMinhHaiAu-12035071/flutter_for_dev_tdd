@@ -4,6 +4,7 @@ import 'package:flutter_for_dev_tdd/ui/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/signup/components/components.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/signup/signup.dart';
 import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -39,6 +40,12 @@ class _SignUpPageState extends State<SignUpPage> {
           widget.presenter.mainError.listen((DomainException? error) {
             if (error != null) {
               showErrorMessage(context, error.message);
+            }
+          });
+
+          widget.presenter.navigateTo.listen((page) {
+            if (page?.isNotEmpty == true) {
+              Get.offAllNamed(page!);
             }
           });
 
