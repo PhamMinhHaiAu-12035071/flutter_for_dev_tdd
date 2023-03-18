@@ -10,14 +10,14 @@ class ValidationSpy extends Mock implements Validation {}
 
 class AuthenticationSpy extends Mock implements Authentication {}
 
-class SaveCurrentAccountSpy extends Mock implements SaveCurrentAccount {}
+class AddAccountSpy extends Mock implements AddAccount {}
 
 class ValidationExceptionSpy extends Mock implements ValidationException {}
 
 void main() {
   late Validation validation;
   late Authentication authentication;
-  late SaveCurrentAccount saveCurrentAccount;
+  late AddAccount addAccount;
   late SignUpPresenter sut;
   late ValidationException validationException;
   late String name;
@@ -40,11 +40,11 @@ void main() {
   setUp(() {
     validation = ValidationSpy();
     authentication = AuthenticationSpy();
-    saveCurrentAccount = SaveCurrentAccountSpy();
+    addAccount = AddAccountSpy();
     sut = GetxSignUpPresenter(
       validation: validation,
       authentication: authentication,
-      saveCurrentAccount: saveCurrentAccount,
+      addAccount: addAccount,
     );
     name = faker.internet.userName();
     email = faker.internet.email();
@@ -53,6 +53,7 @@ void main() {
     validationException = ValidationExceptionSpy();
     mockValidation(field: 'email', value: email);
     mockValidation(field: 'password', value: password);
+    mockValidation(field: 'passwordConfirmation', value: passwordConfirmation);
     mockValidation(field: 'name', value: name);
   });
 
@@ -149,5 +150,82 @@ void main() {
     sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
     sut.validatePasswordConfirmation(passwordConfirmation);
     sut.validatePasswordConfirmation(passwordConfirmation);
+  });
+
+  group('Should emit isFormValid false if any field is invalid', () {
+    void executeValidate() {
+      sut.validateName(name);
+      sut.validateName(name);
+      sut.validateEmail(email);
+      sut.validateEmail(email);
+      sut.validatePassword(password);
+      sut.validatePassword(password);
+      sut.validatePasswordConfirmation(passwordConfirmation);
+      sut.validatePasswordConfirmation(passwordConfirmation);
+    }
+
+    test('with email error', () async {
+      mockValidationExceptionMessage('any_error');
+      mockValidation(field: 'email', value: email, error: validationException);
+      sut.emailError
+          .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
+      sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
+      executeValidate();
+    });
+
+    test('with name error', () async {
+      mockValidationExceptionMessage('any_error');
+      mockValidation(field: 'name', value: name, error: validationException);
+      sut.nameError
+          .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
+      sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
+      executeValidate();
+    });
+    test('with password error', () async {
+      mockValidationExceptionMessage('any_error');
+      mockValidation(
+          field: 'password', value: password, error: validationException);
+      sut.passwordError
+          .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
+      sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
+      executeValidate();
+    });
+
+    test('with password confirmation error', () async {
+      mockValidationExceptionMessage('any_error');
+      mockValidation(
+          field: 'passwordConfirmation',
+          value: passwordConfirmation,
+          error: validationException);
+      sut.passwordConfirmationError
+          .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
+      sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
+      executeValidate();
+    });
+    test('with name and email error', () async {
+      mockValidationExceptionMessage('any_error');
+      mockValidation(field: 'name', value: name, error: validationException);
+      mockValidation(field: 'email', value: email, error: validationException);
+      sut.nameError
+          .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
+      sut.emailError
+          .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
+      sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
+      executeValidate();
+    });
+    test('with name and password error', () async {
+      mockValidationExceptionMessage('any_error');
+      mockValidation(field: 'name', value: name, error: validationException);
+      mockValidation(
+          field: 'password', value: password, error: validationException);
+      sut.nameError
+          .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
+      sut.passwordError
+          .listen(expectAsync1((error) => expect(error?.message, 'any_error')));
+      sut.isFormValid.listen(expectAsync1((isValid) => expect(isValid, false)));
+      executeValidate();
+    });
+
+    /// TODO: write continue testcase missing
   });
 }

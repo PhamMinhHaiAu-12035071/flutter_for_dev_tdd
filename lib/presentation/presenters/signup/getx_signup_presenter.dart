@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
   final Validation validation;
   final Authentication authentication;
-  final SaveCurrentAccount saveCurrentAccount;
+  final AddAccount addAccount;
 
   String? _name;
   String? _email;
@@ -23,7 +23,7 @@ class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
   GetxSignUpPresenter({
     required this.validation,
     required this.authentication,
-    required this.saveCurrentAccount,
+    required this.addAccount,
   });
 
   @override
@@ -91,14 +91,13 @@ class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
   }
 
   void _validateForm() {
-    _isFormValid.value = _emailError.value == null &&
-        _email != null &&
-        _password != null &&
-        _passwordError.value == null &&
-        _password != null &&
-        _nameError.value == null &&
+    _isFormValid.value = _email != null &&
         _name != null &&
-        _passwordConfirmationError.value == null &&
-        _passwordConfirmation != null;
+        _password != null &&
+        _passwordConfirmation != null &&
+        _emailError.value == null &&
+        _nameError.value == null &&
+        _passwordError.value == null &&
+        _passwordConfirmationError.value == null;
   }
 }

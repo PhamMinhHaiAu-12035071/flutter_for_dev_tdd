@@ -14,10 +14,8 @@ class EmailValidation extends Equatable implements FieldValidation {
 
   @override
   ValidationException? validate(String? value) {
-    print("show string email need validate: $value");
     final regex = RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+');
     final isValid = value?.isNotEmpty != true || regex.hasMatch(value!);
-    print("show isValid: $isValid");
     return isValid ? null : exception;
   }
 
