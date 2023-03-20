@@ -320,4 +320,15 @@ void main() {
         (error) => expect(error?.message, R.strings.emailInUseError)));
     await sut.signUp();
   });
+
+  test('Should emit correct events on AddAccount on UnexpectedException',
+      () async {
+    executeValidate();
+    mockHttpExceptionMessage(R.strings.httpUnexpected);
+    mockAddAccountException();
+    expectLater(sut.isLoading, emitsInOrder([true, false]));
+    sut.mainError.listen(expectAsync1(
+        (error) => expect(error?.message, R.strings.httpUnexpected)));
+    await sut.signUp();
+  });
 }
