@@ -1,9 +1,11 @@
 import 'package:faker/faker.dart';
 import 'package:flutter_for_dev_tdd/domain/entities/entities.dart';
+import 'package:flutter_for_dev_tdd/domain/exceptions/exceptions.dart';
 import 'package:flutter_for_dev_tdd/domain/usecases/usecases.dart';
 import 'package:flutter_for_dev_tdd/presentation/presenters/presenters.dart';
 import 'package:flutter_for_dev_tdd/presentation/protocols/protocols.dart';
 import 'package:flutter_for_dev_tdd/ui/pages/pages.dart';
+import 'package:flutter_for_dev_tdd/utils/i18n/i18n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -14,6 +16,8 @@ class AddAccountSpy extends Mock implements AddAccount {}
 class SaveCurrentAccountSpy extends Mock implements SaveCurrentAccount {}
 
 class ValidationExceptionSpy extends Mock implements ValidationException {}
+
+class HttpExceptionSpy extends Mock implements HttpException {}
 
 void main() {
   late Validation validation;
@@ -26,6 +30,7 @@ void main() {
   late String password;
   late String passwordConfirmation;
   late String token;
+  late HttpException httpException;
 
   When mockValidationCall(String? field, String? value) =>
       when(() => validation.validate(
@@ -59,9 +64,19 @@ void main() {
 
   void mockSaveCurrentAccount() =>
       mockSaveCurrentAccountCall().thenAnswer((_) async => Future.value);
+
+  void mockHttpExceptionMessage(String message) {
+    when(() => httpException.message).thenReturn(message);
+  }
+
+  void mockAddAccountException() {
+    mockAddAccountCall().thenThrow(httpException);
+  }
+
   setUp(() {
     validation = ValidationSpy();
     addAccount = AddAccountSpy();
+    httpException = HttpExceptionSpy();
     saveCurrentAccount = SaveCurrentAccountSpy();
     sut = GetxSignUpPresenter(
       validation: validation,
@@ -253,10 +268,6 @@ void main() {
     /// TODO: write continue testcase missing
   });
 
-  group('Should call signUp method when isFormValid emits true', () {
-    /// TODO: write continue testcase missing
-  });
-
   test('Should emit isFormValid true if all fields are valid', () async {
     sut.nameError.listen(expectAsync1((error) => expect(error, null)));
     sut.emailError.listen(expectAsync1((error) => expect(error, null)));
@@ -296,6 +307,17 @@ void main() {
   test('Should emit correct events on AddAccount success', () async {
     executeValidate();
     expectLater(sut.isLoading, emitsInOrder([true, false]));
+    await sut.signUp();
+  });
+
+  test('Should emit correct events on AddAccount on EmailInUseException',
+      () async {
+    executeValidate();
+    mockHttpExceptionMessage(R.strings.emailInUseError);
+    mockAddAccountException();
+    expectLater(sut.isLoading, emitsInOrder([true, false]));
+    sut.mainError.listen(expectAsync1(
+        (error) => expect(error?.message, R.strings.emailInUseError)));
     await sut.signUp();
   });
 }

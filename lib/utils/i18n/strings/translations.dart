@@ -13,4 +13,5 @@ abstract class Translations {
   String get password;
   String get btnLogin;
   String get btnSignUp;
+  String get emailInUseError;
 }

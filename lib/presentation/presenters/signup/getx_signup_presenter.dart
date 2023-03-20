@@ -38,8 +38,7 @@ class GetxSignUpPresenter extends GetxController implements SignUpPresenter {
   Stream<bool> get isLoading => _isLoading.stream;
 
   @override
-  // TODO: implement mainError
-  Stream<DomainException?> get mainError => throw UnimplementedError();
+  Stream<DomainException?> get mainError => _mainError.stream;
 
   @override
   Stream<DomainException?> get nameError => _nameError.stream;

@@ -42,4 +42,7 @@ class EnUs implements Translations {
 
   @override
   String get btnSignUp => 'Sign Up';
+
+  @override
+  String get emailInUseError => 'Email already in use';
 }

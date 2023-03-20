@@ -42,4 +42,7 @@ class PtBr implements Translations {
 
   @override
   String get btnSignUp => 'Cadastrar';
+
+  @override
+  String get emailInUseError => 'Email já em uso.';
 }
